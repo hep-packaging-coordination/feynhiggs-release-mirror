@@ -32,7 +32,7 @@ AppendTo[$Echo, "stdout"];
 
 << FeynArts`;
 
-PrependTo[$ModelPath, "../model"];
+PrependTo[$ModelPath, "../Models"];
 
 << FormCalc`;
 
@@ -128,7 +128,8 @@ final[expr_] := expr /.
     Sqrt[2] -> sqrt2,
     1/Sqrt[2] -> 1/sqrt2,
     re[h_[x__]] :> ToSymbol[h, "Re"][x],
-    im[h_[x__]] :> ToSymbol[h, "Im"][x] } /.
+    im[h_[x__]] :> ToSymbol[h, "Im"][x],
+    C0i[x__] /; !FreeQ[List[x], _MASf2|_MASf|_MSf2|_MSf] -> decczero C0i[x] } /.
   IndexDelta -> IDelta;
 
 
@@ -457,6 +458,10 @@ s/, flags//
 /Cloop(1) = 0/d
 }
 '
+
+  for file in $1/*.Fh ; do
+    mv "$file" "${file/.Fh/.h.F}"
+  done
 
   for file in $1/*.[Fh] ; do
     f=`basename "$file"`

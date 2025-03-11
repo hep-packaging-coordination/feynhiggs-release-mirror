@@ -10,11 +10,6 @@
 #include "externals.h"
 #include "types.h"
 
-#define loglevelXt 2
-
-
-* Main function calculating the correction to Mh due to resummation
-
 	subroutine Resum4H23(res)
 	implicit none
 	RealType res
@@ -82,11 +77,11 @@
 	tSUq = 2*log(MSUq)
 	tA0 = log(MA02)
 	tA0q = log(MA02q)
-	tMUE = 2*log(mueOS*MSUSYOS)
-	tMUEq = 2*log(MUEq)
+	tMUE = log((mueOS*MSUSYOS)**2)
+	tMUEq = log(MUEq**2)
 	tM_2 = log(Sq(M_2))
 
-	if( (finfieldren .eq. 1) .AND. (tbdef .eq. 0) ) then
+	if( tanbdef .eq. tanbTHDM ) then
 	  db0msqmsu = Re(DB0(0D0,MSS2(3,3,3)/MSUSYOS**2,
      &                           MSS2(3,3,4)/MSUSYOS**2))
 	  db0m1mue = abs(M_1)*abs(MUE)*Re(DB0(0D0, Sq(M_1), Sq(MUE)))
@@ -105,10 +100,11 @@
 	x(itb) = TB
 
 * solve for x using Newton procedure
-	call FindMinimum(fail, threshdiff, x, nSM - 1)
+	call FindMinimum(fail, threshdiff, x, nSM - 2)
 
 	if ( matchsf .eq. 1 ) then
 	  HScouplings = x
+	  HScouplings_valid = 1
 	endif
 
 #include "FOSubtract.h"
@@ -129,12 +125,12 @@
 
 	if( debuglevel .gt. 4 ) then
 	  DEFT "EFT final:"				ENDL
-	  DEFT "lam(MT)      =", vev**2*x(ilam)	ENDL
-	  DEFT "subnonlog1L  =", vev**2*subnonlog1L	ENDL
-	  DEFT "sublog1L     =", vev**2*sublog1L	ENDL
-	  DEFT "subnonlog2La =", vev**2*subnonlog2La	ENDL
-	  DEFT "subnonlog2Lb =", vev**2*subnonlog2Lb	ENDL
-	  DEFT "sublog2L     =", vev**2*sublog2L	ENDL
+	  DEFT "lam(MT)      =", vev2*x(ilam)	ENDL
+	  DEFT "subnonlog1L  =", vev2*subnonlog1L	ENDL
+	  DEFT "sublog1L     =", vev2*sublog1L	ENDL
+	  DEFT "subnonlog2La =", vev2*subnonlog2La	ENDL
+	  DEFT "subnonlog2Lb =", vev2*subnonlog2Lb	ENDL
+	  DEFT "sublog2L     =", vev2*sublog2L	ENDL
 	endif
 	end
 
@@ -208,7 +204,7 @@
 #endif
 
 	y(ig1u) = y(igy)*(ySB + k1L/48D0/ySB*(
-     &    12*yht2*(9 + 7*tSQ - 13*tSU + 6*tMatch - xMS2*ySB**2) -
+     &    12*yht2*(9 + 7*tSQq - 13*tSUq + 6*tMatch - xMS2*ySB**2) -
      &    ySB**2*(9*(2 - (7 - 6*tA0q + 6*tMatch)*yCB2)*yg2 +
      &      ygy2*(132 - tA0q*(8 - 18*yCB2) +
      &      6*tMatch*(28 - 3*yCB2) - 21*yCB2 - 8*tSS1q)) ))
@@ -217,7 +213,7 @@
 #endif
 
 	y(ig2u) = y(ig)*(ySB + k1L/48D0/ySB*(
-     &    12*yht2*(9 - 9*tSQ + 3*tSU + 6*tMatch - xMS2*ySB**2) -
+     &    12*yht2*(9 - 9*tSQq + 3*tSUq + 6*tMatch - xMS2*ySB**2) -
      &    ySB**2*(3*(2 - (7 - 6*tA0q + 6*tMatch)*yCB2)*ygy2 +
      &      yg2*(32 - 8*tA0q + 104*tMatch +
      &        (33 - 42*tA0q + 42*tMatch)*yCB2 - 24*tSS2q)) ))
@@ -320,7 +316,7 @@
 	endif
 
 * threshold between tbMSSM and tbTHDM
-	if( (finfieldren .eq. 1) .AND. (tbdef .eq. 0) ) then
+	if( tanbdef .eq. tanbTHDM ) then
 	  y(itb) = y(itb)*(1
      &             + 3/2D0*k1L*x(iht)**2*(1+y(itb)**2)/y(itb)**2
      &                           *xMS*(xMS+mueMS*(1/y(itb)+y(itb)))

@@ -1,12 +1,13 @@
 * SetFlags.F
 * set the flags for FeynHiggs
 * this file is part of FeynHiggs
-* last modified 13 Jul 18 th
+* last modified 1 Apr 20 th
 
 #include "externals.h"
 #include "types.h"
 #include "debug.h"
 #include "version.h"
+#include "flags.h"
 
 
 	subroutine FHSetFlags(error,
@@ -54,11 +55,11 @@ c	  call setfpu
 	error = 0
 
 	mssmpart = mssmpart_
-	Check(mssmpart, 0, 4, "mssmpart")
+	Check(mssmpart, mssmpart_min, mssmpart_max, "mssmpart")
 	gM = 2*ibits(mssmpart - 3, 3, 1) + 1
 
 	higgsmix = higgsmix_
-	Check(higgsmix, 1, 4, "higgsmix")
+	Check(higgsmix, higgsmix_min, higgsmix_max, "higgsmix")
 #define Need(i) -ibits(i-1-higgsmix,4,1)
 	mixmask =
      &    SEKey(h0h0) + SEKey(HHHH) + SEKey(A0A0) + SEKey(HmHp) +
@@ -67,28 +68,28 @@ c	  call setfpu
      &    iand(Need(4), goldstones)
 
 	p2approx = p2approx_
-	Check(p2approx, 0, 4, "p2approx")
+	Check(p2approx, p2approx_min, p2approx_max, "p2approx")
 
 	looplevel = looplevel_
-	Check(looplevel, 0, 2, "looplevel")
+	Check(looplevel, looplevel_min, looplevel_max, "looplevel")
 
 	loglevel = loglevel_
-	Check(loglevel, 0, 4, "loglevel")
+	Check(loglevel, loglevel_min, loglevel_max, "loglevel")
 
 	runningMT = runningMT_
-	Check(runningMT, 0, 3, "runningMT")
+	Check(runningMT, runningMT_min, runningMT_max, "runningMT")
 
 	tM1 = tSelect(tM3,tMT,tMT,tMD, runningMT)
 	tM2 = tM1
 
 	botResum = botResum_
-	Check(botResum, 0, 2, "botResum")
+	Check(botResum, botResum_min, botResum_max, "botResum")
 	b = merge(1, 0, botResum .eq. 0)
 	bM = bTR + (bTR1 - bTR)*b
 	bMps = bTRps + (bTR1ps - bTRps)*b
 
 	tlCplxApprox = tlCplxApprox_
-	Check(tlCplxApprox, 0, 3, "tlCplxApprox")
+	Check(tlCplxApprox, tlCplxApprox_min, tlCplxApprox_max, "tlCplxApprox")
 
 	if( mssmpart .eq. 0 ) then
 	  p2approx = 1
@@ -199,11 +200,54 @@ c	  call setfpu
 	print *, "env FHFINFIELDREN ", finfieldren
 110	continue
 
-	tbdef = 1
-	call getenv("FHTBDEF", env)
-	read(env, *, end=120, err=120) tbdef
-	print *, "env FHTBDEF ", tbdef
+	tbrepara = 1
+	call getenv("FHTBREPARA", env)
+	read(env, *, end=120, err=120) tbrepara
+	print *, "env FHTBREPARA ", tbrepara
 120	continue
+
+	tanbdefInput = 0
+	call getenv("FHTBDEF", env)
+	read(env, *, end=130, err=130) tanbdefInput
+	print *, "env FHTBDEF ", tanbdefInput
+130	continue
+
+	tanbscaleInput = -100D0
+	call getenv("FHTBSCALE", env)
+	read(env, *, end=140, err=140) tanbscaleInput
+	print *, "env FHTBSCALE ", tanbscaleInput
+	if( tanbscaleInput .ge. 0D0 ) then
+	  tanbscaleInput = tanbscaleInput**2
+	endif
+140	continue
+
+	THDMTLasat = 1
+	call getenv("FHTLTHDMASAT", env)
+	read(env, *, end=150, err=150) THDMTLasat
+	print *, "env FHTLTHDMASAT ", THDMTLasat
+150	continue
+
+	stiffodesolver = 0
+	call getenv("FHSTIFFODESOLVER", env)
+	read(env, *, end=160, err=160) stiffodesolver
+	print *, "env FHSTIFFODESOLVER ", stiffodesolver
+160	continue
+
+	seexp = 0
+	call getenv("FHSEEXP", env)
+	read(env, *, end=170, err=170) seexp
+	print *, "env FHSEEXP ", seexp
+170	continue
+
+	decczero = 1
+	call getenv("FHDECCZERO", env)
+	read(env, *, end=180, err=180) decczero
+	print *, "env FHDECCZERO ", decczero
+180	continue
+	if( decczero .ne. 1 ) then
+	  decczero = 0
+	  Warning("FHDECCZERO != 1 only consistent if A_f, MUE << MSusy")
+	endif
 
 * a) variation of mudim from MT/2 to 2 MT
 	uncmask(1) = 0
@@ -222,15 +266,23 @@ c	  call setfpu
 * h) uncertainty from suppressed term if looplevel = 0
 	uncmask(8) = 1
 	call getenv("FHUNCMASK", env)
-	read(env, *, end=130, err=130) uncmask
+	read(env, *, end=190, err=190) uncmask
 	print *, "env FHUNCMASK ", uncmask
-130	continue
+190	continue
 
 	drbartopmass = 0
 	call getenv("FHDRTOPMASS", env)
-	read(env, *, end=140, err=140) drbartopmass
+	read(env, *, end=200, err=200) drbartopmass
 	print *, "env FHDRTOPMASS ", drbartopmass
-140	continue
+200	continue
+
+	MUEscale = -1D0
+	call getenv("FHMUESCALE", env)
+	read(env, *, end=210, err=210) MUEscale
+	print *, "env FHMUESCALE ", MUEscale
+	if( ( MUEscale .gt. 0D0 ) .and. ( loglevel .eq. 4 ) )
+     &    Warning("loglevel = 4 assumes MUE to be renormalized at the scale MSusy")
+210	continue
 
 	call getenv("FHEXTSE", extSE)
 	if( extSE(1:1) .ne. ' ' )
