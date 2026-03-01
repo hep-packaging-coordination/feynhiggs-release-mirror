@@ -4,9 +4,10 @@
 * last modified 25 Jan 17 th
 
 
-	RealType pi, zeta2, degree, sqrt2, sqrt3, log2
+        RealType pi, zeta2, zeta3, degree, sqrt2, sqrt3, log2
 	parameter (pi = 3.1415926535897932384626433832795029D0)
 	parameter (zeta2 = pi**2/6D0)
+	parameter (zeta3 = 1.20205690315959428539973816151D0)
 	parameter (degree = pi/180D0)
 	parameter (sqrt2 = 1.41421356237309504880168872421D0)
 	parameter (sqrt3 = 1.73205080756887729352744634151D0)
@@ -48,12 +49,12 @@
 
 	RealType DeltaAlfaLept, DeltaAlfaHad5, DeltaAlfa_default
 	parameter (DeltaAlfaLept = .031497687D0)
-	parameter (DeltaAlfaHad5 = .027547D0)
+	parameter (DeltaAlfaHad5 = .02766D0)
 	parameter (DeltaAlfa_default = DeltaAlfaLept + DeltaAlfaHad5)
 
 	RealType invAlfa0_default, invAlfaMZ_default
 	RealType GF_default, AlfasMZ_default
-	parameter (invAlfa0_default = 137.0359895D0)
+	parameter (invAlfa0_default = 137.035999084D0)
 	parameter (invAlfaMZ_default =
      &    (1 - DeltaAlfa_default)*invAlfa0_default)
 	parameter (GF_default = 1.16639D-5)

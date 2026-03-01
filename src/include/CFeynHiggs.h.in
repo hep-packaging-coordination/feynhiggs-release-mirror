@@ -2,7 +2,7 @@
 	CFeynHiggs.h
 		C/C++ wrapper functions for the FH subroutines
 		this file is part of FeynHiggs
-		last modified 31 Mar 20 th
+		last modified 15 May 21 th
 */
 
 
@@ -53,12 +53,12 @@ enum { nrecord = 4*FHRecordN };
 #define _fh_Pcac_(v,d) (CCOMPLEX *)v##_
 #define _fh_Dr_(v,d) REAL v##_ d
 #define _fh_Dc_(v,d) COMPLEX v##_ d
-#define _fh_Ir_(v,d) ToREALArray((REAL *)v##_, (cRealType *)&v, sizeof v##_/sizeof(REAL))
-#define _fh_Iar_(v,d) ToREALArray((REAL *)v##_, (cRealType *)v, sizeof v##_/sizeof(REAL))
-#define _fh_Ic_(v,d) ToREALArray((REAL *)v##_, (cRealType *)&v, sizeof v##_/sizeof(REAL))
-#define _fh_Iac_(v,d) ToREALArray((REAL *)v##_, (cRealType *)v, sizeof v##_/sizeof(REAL))
-#define _fh_Or_(v,d) ToRealArray((RealType *)v, (CREAL *)v##_, sizeof v##_/sizeof(REAL))
-#define _fh_Oc_(v,d) ToRealArray((RealType *)v, (CREAL *)v##_, sizeof v##_/sizeof(REAL))
+#define _fh_Ir_(v,d) ToREALArray((REAL *)v##_, (cRealType *)&v, sizeof v##_/(sizeof(REAL)))
+#define _fh_Iar_(v,d) ToREALArray((REAL *)v##_, (cRealType *)v, sizeof v##_/(sizeof(REAL)))
+#define _fh_Ic_(v,d) ToREALArray((REAL *)v##_, (cRealType *)&v, sizeof v##_/(sizeof(REAL)))
+#define _fh_Iac_(v,d) ToREALArray((REAL *)v##_, (cRealType *)v, sizeof v##_/(sizeof(REAL)))
+#define _fh_Or_(v,d) ToRealArray((RealType *)v, (CREAL *)v##_, sizeof v##_/(sizeof(REAL)))
+#define _fh_Oc_(v,d) ToRealArray((RealType *)v, (CREAL *)v##_, sizeof v##_/(sizeof(REAL)))
 
 #else
 

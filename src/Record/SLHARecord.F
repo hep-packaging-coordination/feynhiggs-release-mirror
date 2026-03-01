@@ -53,7 +53,10 @@ c	if( extpar_Q .eq. invalid ) extpar_Q = 2D16
 
 	if( Re(SMInputs_invAlfaMZ) .gt. 0 ) then
 	  R(iinvAlfaMZ) = Re(SMInputs_invAlfaMZ) +
-     &      DeltaAlfaTopAlfa(Re(SMInputs_Mt)**2, Re(SMInputs_MZ)**2)
+     &      DeltaAlfaTopAlfa(Re(SMInputs_Mt)**2, Re(SMInputs_MZ)**2) +
+     &      invAlfa0_default*.007127D0
+c last line: alfa_MSbar -> alfa_OS conversion, from Eq (10.8) of
+c http://pdg.lbl.gov/2018/reviews/rpp2018-rev-standard-model.pdf
 	else
 	  R(iinvAlfaMZ) = invAlfaMZ_default
 	endif
@@ -455,4 +458,3 @@ c	x = vev/sqrt2*CB
 	R(iRe(i+2)) = Re(c)
 	R(iIm(i+2)) = Im(c)
 	end
-
