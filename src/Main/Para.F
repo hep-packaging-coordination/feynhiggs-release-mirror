@@ -396,6 +396,9 @@
 	character*(*) cplxmsg
 	parameter (cplxmsg = " in the presence of complex parameters")
 
+	RealType M3SQ_shift, M3SU_shift, M3SD_shift
+	ComplexType At_shift, Ab_shift
+
 c whether threshold corrections should be defined in terms of MSSM parameters by default
 	gMSSMthresholds = 0
 c whether 1L threshold corrections should be multiplied by v/Ms by default
@@ -465,14 +468,27 @@ c tmp for TLps:
 	drbar = 0
 	fail = 0
 
-	Q2default = abs(MSS(3,3)*MSS(4,3))
+c use MSusy as default scale for stop parameters if Mgl <= MSusy, else Mgl
+	if( MGl2 .gt. abs(MSS(3,3)*MSS(4,3)) ) then
+	  Q2default = MGl2
+	else
+	  Q2default = abs(MSS(3,3)*MSS(4,3))
+	endif
 
-	drbarvars = 0
-	if( drbarmode .ne. 0 .and. QSf(3) .ne. 0 ) then
-	  drbarvars = 1
-	  if( QSf(3) .gt. 0 .and. abs(QSf(3)**2 - Q2default) .gt. 1 )
-     &      Warning("Qt = sqrt(MStop1*MStop2) assumed in EFT calculation")
-	  call SfermionsDR(error)
+	stopDRbarvars = 0
+	if(( drbarmode .ne. 0 ) .and. ( QSf(3) .ne. 0 )) then
+	    stopDRbarvars = 1
+	    if( QSf(3) .gt. 0 .and. abs(QSf(3)**2 - Q2default) .gt. 1 )
+     &        Warning("Qt = sqrt(MStop1*MStop2) assumed in EFT
+     &                 calculation if MGl <= sqrt(MStop1*MStop2),
+     &                 Qt = MGl if MGl > sqrt(MStop1*MStop2)")
+	    call SfermionsDR(error)
+	endif
+
+	sbottomDRbarvars = 0
+	if(( drbarmode .eq. 2 ) .and. ( QSf(4) .ne. 0 )) then
+	    sbottomDRbarvars = 1
+	  call SbottomsDR(error)
 	endif
 
 	do t = 3, 4
@@ -490,11 +506,25 @@ c for very large MSusy DRbartoOS transition may fail -> switched of for seexp > 
 	  endif
 	enddo
 
+c modify DRbartoOS shifts if initital quantities are MDRbar and not DRbar
+	if( (MDRbar .gt. 0) .and.
+     &      ((drbarmode .ne. 0) .and.
+     &       ((QSf(3) .ne. 0) .or. QSf(3) .ne. 0)) ) then
+	  call DRbartoMDRbar(MSS(tQ(3),3), MSS(tU(3),3), MSS(tU(3),3),
+     &                         Af(3,3), M_3, QSf(3), M3SQ_shift,
+     &                         M3SU_shift, M3SD_shift,
+     &                         At_shift, Ab_shift)
+	endif
+
 	if( btest(drbar, 3) ) then
 	  if( debuglevel .ge. 2 ) then
 	    DPARA "MSQ_DRbar    =", MSS(tQ(3),3)	ENDL
 	    DPARA "MSU_DRbar    =", MSS(tU(3),3)	ENDL
 	    DPARA "Xt_DRbar     =", Xf(3,3)		ENDL
+	  endif
+	  if( MDRbar .gt. 0 ) then
+	    osshift(2,3) = osshift(2,3) - M3SU_shift
+	    osshift(3,3) = osshift(3,3) - At_shift
 	  endif
 	  DSS2(1,3,3) = DSS2(1,3,3) + osshift(1,3)
 	  DSS2(2,3,3) = DSS2(2,3,3) + osshift(2,3)
@@ -511,6 +541,9 @@ c for very large MSusy DRbartoOS transition may fail -> switched of for seexp > 
 	  endif
 	endif
 
+	if( stopDRbarvars .eq. 0 ) call SfermionsDR(error)
+	call StopsOS(error)
+
 	Ab_bad = 0
 	if( btest(drbar, 4) ) then
 	  if( abs(osshift(3,4)) .gt. .3D0*abs(Af(4,3)) ) then
@@ -525,6 +558,10 @@ c for very large MSusy DRbartoOS transition may fail -> switched of for seexp > 
 	      DPARA "MSQ_DRbar    =", MSS(tQ(4),3)	ENDL
 	      DPARA "MSD_DRbar    =", MSS(tU(4),3)	ENDL
 	      DPARA "Xb_DRbar     =", Xf(4,3)		ENDL
+	    endif
+	    if( MDRbar .gt. 0 ) then
+	      osshift(2,4) = osshift(2,4) - M3SD_shift
+	      osshift(3,4) = osshift(3,4) - Ab_shift
 	    endif
 	    if( forceSU2 .ne. 0 ) then
 	      DSS2(1,4,3) = DSS2(1,3,3) + (DSS2(2,3,3) - DSS2(2,4,3)) -
@@ -547,8 +584,8 @@ c for very large MSusy DRbartoOS transition may fail -> switched of for seexp > 
 	  endif
 	endif
 
-	if( drbarvars .eq. 0 ) call SfermionsDR(error)
-	call SfermionsOS(error)
+	if( sbottomDRbarvars .eq. 0 ) call SbottomsDR(error)
+	call SbottomsOS(error)
 
 	call SetupInterpolation
 

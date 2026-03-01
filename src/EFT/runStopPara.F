@@ -48,6 +48,16 @@
      &          + 3*(2*Xt_+Conjugate(MUE_)/tbMSSM)*htMSSM**2)*tmatchsf
 	  m_3OS = M_3_
 	  MHin2q = MHin2
+* remove terms proportional to M3 in running if MDR is used
+	  if( MDRbar .gt. 0 ) then
+	    MSQq = sqrt(MSQq**2
+     &              - k1L*(- 32/6D0*g3MSSM**2*abs(M_3_)**2)*tmatchsf)
+	    MSUq = sqrt(MSUq**2
+     &              - k1L*(- 32/6D0*g3MSSM**2*abs(M_3_)**2)*tmatchsf)
+	    MSDq = sqrt(MSDq**2
+     &              - k1L*(- 32/6D0*g3MSSM**2*abs(M_3_)**2)*tmatchsf)
+	    Xtq = Xtq - k1L*(32/6D0*g3MSSM**2*abs(M_3_))*tmatchsf
+	  endif
 	endif
 
 #ifdef DETAILED_DEBUG

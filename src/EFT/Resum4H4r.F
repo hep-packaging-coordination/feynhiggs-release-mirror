@@ -59,6 +59,10 @@ c variables for calculating subtraction terms
 
 	external threshdiff4r
 
+	if( tGlu .gt. 1.1*tSUSYOS ) then
+  	  Warning("rTHDM-EFT calculation assumes Mgl <~ MSusy.")
+	endif
+
 * evaluate loopfunctions and parameters used in EFT calculation
 
 #include "para4r.h"

@@ -859,7 +859,7 @@
      &         (TB*TB2**2)))
 
 * shifts if the stop sector is renormalized on-shell
-	if( drbarvars .ne. 1 ) then
+	if( stopDRbarvars .ne. 1 ) then
 
 	dat = 1/16.D0*(k1L*
      &       (mueOS*(-(GSMT2*

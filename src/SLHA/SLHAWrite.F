@@ -27,6 +27,8 @@
 	character*(11*PDGLen) name
 	character*(10*PDGDigits) ids
 
+	RealType vS, vA
+
 #include "SLHAWriteBlocks.h"
 
 	if( filename .eq. "-" ) then
@@ -50,6 +52,9 @@
 300	format("DECAY",I10,3x,1P,E16.8,0P,"   # Gamma(",A,")")
 301	format(I PDGDigits)
 302	format(3x,1P,E16.8,0P,I4,A,"   # BR(",A,")")
+303	format(E16.8,3x,1P,I4,I4,I4,I4,0P,"   # ",A)
+304	format(E16.8,E16.8,3x,1P,I4,I4,I4,I4,0P,"   # ",A)
+305	format(I4,I4,I4,3x,1P,E16.8,0P,"   # ",A)
 
 #define Block(i) \
 write(unit,100) blockname(i)(5-2*im:len_trim(blockname(i)))
@@ -74,6 +79,16 @@ if( val(i,j,k) .ne. invalid ) write(unit,205) i,j,k, val(i,j,k), name, i,j,k
 
 #define Number(val,name) \
 if( val .ne. invalid ) write(unit,206) val, name
+
+#define BosC(hi,b1,b2,val,name) \
+if( val .ne. invalid ) write(unit,303) val, 3, hi, b1, b2, name
+
+#define FermC(rval,cval,hi,f1,f2,name) \
+if( (rval .ne. invalid) .and. (cval .ne. invalid) ) \
+write(unit,304) rval, cval, 3, hi, f1, f2, name
+
+#define xs(val,i1,i2,f,name) \
+if( val .ne. invalid ) write(unit,305) i1, i2, f, val, name
 
 	n = int(SPInfo_NLines)
 	if( n .gt. 0 ) then
@@ -1000,9 +1015,72 @@ if( val .ne. invalid ) write(unit,206) val, name
 	  enddo
 	enddo
 
+	do im = 1, SLHAExist(BlockHiggsCouplingsBosons(1),
+     &                       LengthHiggsCouplingsBosons)
+	  Block(hcbos)
+	  BosC(25, 24, 24, HiggsCouplingsBosons_gh1WW,  "h1WW effC")
+	  BosC(35, 24, 24, HiggsCouplingsBosons_gh2WW,  "h2WW effC")
+	  BosC(36, 24, 24, HiggsCouplingsBosons_gh3WW,  "h3WW effC")
+	  BosC(25, 23, 23, HiggsCouplingsBosons_gh1ZZ,  "h1ZZ effC")
+	  BosC(35, 23, 23, HiggsCouplingsBosons_gh2ZZ,  "h2ZZ effC")
+	  BosC(36, 23, 23, HiggsCouplingsBosons_gh3ZZ,  "h3ZZ effC")
+	  BosC(25, 21, 21, HiggsCouplingsBosons_gh1gg,  "h1gg effC")
+	  BosC(35, 21, 21, HiggsCouplingsBosons_gh2gg,  "h2gg effC")
+	  BosC(36, 21, 21, HiggsCouplingsBosons_gh3gg,  "h3gg effC")
+	  BosC(25, 25, 23, HiggsCouplingsBosons_gh1h1Z,  "h1h1Z effC")
+	  BosC(35, 25, 23, HiggsCouplingsBosons_gh2h1Z,  "h2h1Z effC")
+	  BosC(35, 35, 23, HiggsCouplingsBosons_gh2h2Z,  "h2h2Z effC")
+	  BosC(36, 25, 23, HiggsCouplingsBosons_gh3h1Z,  "h3h1Z effC")
+	  BosC(36, 35, 23, HiggsCouplingsBosons_gh3h2Z,  "h3h2Z effC")
+	  BosC(36, 36, 23, HiggsCouplingsBosons_gh3h3Z,  "h3h3Z effC")
+	enddo
+
+	do im = 1, SLHAExist(BlockHiggsCouplingsFermions(1),
+     &                       LengthHiggsCouplingsFermions)
+	  Block(hcferm)
+	  vS = HiggsCouplingsFermions_gh1bbS
+	  vA = HiggsCouplingsFermions_gh1bbA
+	  FermC(vS, vA, 25, 5, 5, "h1bb effC")
+	  vS = HiggsCouplingsFermions_gh2bbS
+	  vA = HiggsCouplingsFermions_gh2bbA
+	  FermC(vS, vA, 35, 5, 5, "h2bb effC")
+	  vS = HiggsCouplingsFermions_gh3bbS
+	  vA = HiggsCouplingsFermions_gh3bbA
+	  FermC(vS, vA, 36, 5, 5, "h3bb effC")
+	  vS = HiggsCouplingsFermions_gh1ttS
+	  vA = HiggsCouplingsFermions_gh1ttA
+	  FermC(vS, vA, 25, 6, 6, "h1tt effC")
+	  vS = HiggsCouplingsFermions_gh2ttS
+	  vA = HiggsCouplingsFermions_gh2ttA
+	  FermC(vS, vA, 35, 6, 6, "h2tt effC")
+	  vS = HiggsCouplingsFermions_gh3ttS
+	  vA = HiggsCouplingsFermions_gh3ttA
+	  FermC(vS, vA, 36, 6, 6, "h3tt effC")
+	  vS = HiggsCouplingsFermions_gh1tautauS
+	  vA = HiggsCouplingsFermions_gh1tautauA
+	  FermC(vS, vA, 25, 15, 15, "h1tautau effC")
+	  vS = HiggsCouplingsFermions_gh2tautauS
+	  vA = HiggsCouplingsFermions_gh2tautauA
+	  FermC(vS, vA, 35, 15, 15, "h2tautau effC")
+	  vS = HiggsCouplingsFermions_gh3tautauS
+	  vA = HiggsCouplingsFermions_gh3tautauA
+	  FermC(vS, vA, 36, 15, 15, "h3tautau effC")
+	enddo
+
+	do im = 1, SLHAExist(BlockChargedHiggsLHC8(1),
+     &                       LengthChargedHiggsLHC8)
+	  Block(chxs8)
+	  xs(ChargedHiggsLHC8_xstbHp, 5, 6, 37, "t-b-Hp XS (in pb)")
+	enddo
+
+	do im = 1, SLHAExist(BlockChargedHiggsLHC13(1),
+     &                       LengthChargedHiggsLHC13)
+	  Block(chxs13)
+	  xs(ChargedHiggsLHC13_xstbHp, 5, 6, 37, "t-b-Hp XS (in pb)")
+	enddo
+
 	close(unit)
 	return
 
 997	error = 1
 	end
-

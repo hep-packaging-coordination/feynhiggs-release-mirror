@@ -28,6 +28,9 @@ BeginPackage["GenSLHA`"]
 Struct::usage = "Struct[ind][mem] defines a structure with members mem,
 defined for index ranges ind."
 
+SLHAIndices::usage = "SLHAIndices[desc] generates the indices for
+accessing the SLHAData structure resulting from desc in Mathematica."
+
 SLHADefs::usage = "SLHADefs[desc] generates the definitions for
 SLHADefs.h from the SLHA descriptions in desc."
 
@@ -42,18 +45,23 @@ SLHA blocks in desc."
 
 Begin["`Private`"]
 
-full = blockname <> "_" <> str[#1] &;
+Attributes[fmt] = {Listable}
 
-glob = "#define " <> #1 <> blockname <> " " <> str[#2] <> "\n" &
+fmt[s_String] := s
 
-def = "#define " <> full[#2] <> " " <>
-  str[data[#2, #3 + (offset += #1) - #1 + 1]] <> "\n" &
+fmt[expr_] := StringReplace[ToString[expr, CForm], {" " -> "", "bracket" -> ""}]
 
-equ = "#define   " <> full[#1] <> " " <> #2 <> "\n" &
 
-str = StringReplace[ToString[#, CForm], {" " -> "", "bracket" -> ""}] &
+define[lhs_, rhs_] := {"#define ", fmt[lhs], " ", fmt[rhs], "\n"}
 
-flat = ToExpression[ToString[#] <> "Flat"] &
+
+full[b_:blockname, lhs_] := {b, "_", lhs}
+
+def[len_, lhs_, rhs_, ___] := define[full[lhs], data[lhs, rhs + (offset += len) - len + 1]]
+
+equ[lhs_, rhs_] := define[{"  ", full[lhs]}, rhs]
+
+flat[sym_] := ToExpression[ToString[sym] <> "Flat"]
 
 
 data[n_] := SlhaData[n]
@@ -73,12 +81,12 @@ Block[ {offset = offset},
 block[name_[_] -> members_] := block[name, members]
 
 block[name_, members_] :=
-Block[ {blockname = str[name], old, res},
+Block[ {blockname = fmt[name], old, res},
   old = offset;
   res = member/@ members;
-  glob["Offset", old] <>
-  glob["Length", offset - old] <>
-  "#define Block" <> blockname <> "(i) " <> str[data[old + i]] <> "\n" <>
+  define[{"Offset", blockname}, old] <>
+  define[{"Length", blockname}, offset - old] <>
+  define[{"Block", name[i_]}, data[old + i]] <>
   res <>
   "\n"
 ]
@@ -112,14 +120,14 @@ member[s_Symbol[r_List]] := def@@ range[1, s[], 0][r]
 
 member[s_Symbol[r__List]] :=
 Block[ {d = def[0, #2, #3]},
-  If[ Length[#4] > 1, d = {d, def[#1,
-    Operate[flat, Prepend[Drop[#2, Length[#4]], i]], #3 - #5 + i - 1]} ];
+  If[ Length[#4] > 1, d = {d,
+    def[#1, Operate[flat, Prepend[Drop[#2, Length[#4]], i]], #3 - #5 + i - 1]} ];
   d
 ]&@@ range[1, s[], 0][r]
 
-member[a_ == i_Integer] := equ[a, str[i]]
+member[a_ == i_Integer] := equ[a, fmt[i]]
 
-member[a_ == b_**s_] := equ[a, str[b] <> "_" <> str[s]]
+member[a_ == b_**s_] := equ[a, full[b, s]]
 
 member[a_ == s_] := equ[a, full[s]]
 
@@ -141,8 +149,10 @@ SLHADefs::syntax = "Syntax error in `` in block ``."
 range[len_, eq__][{stride_Integer, var__}, o___] :=
   {len, #2, #3, eq}&@@ range[stride, eq][{var}, o]
 
+Off[RuleDelayed::rhs]
+
 range[len_, lhs_, rhs_][{var_Symbol, min_:1, max_}, o___] :=
-  range[len (max - min + 1), Append[lhs, var],
+  range[len (max - min + 1), Append[lhs, Pattern[var, Blank[]]],
     rhs + bracket[len, var] - len min][o]
 
 range[len_, eq__][] := {len, eq, eq}
@@ -162,12 +172,32 @@ TimeStamp[] :=
   StringTake["0" <> ToString[#5], -2]&@@ Date[]
 
 
-SLHADefs::info = "Descriptor contains `` SLHA Blocks."
+SLHAIndices[desc_] :=
+Block[ {offset = 0},
+  fmt[expr_] := ToString[expr /. bracket | SlhaData | Slhadata -> Identity];
+  define[lhs_, rhs_] := {fmt[lhs], " := ", fmt[rhs], ";\n"};
+  full[b_:blockname, lhs_] := {b, "@", lhs};
+  "\
+(*\n\
+\tSLHAIndices.m\n\
+\t\tindices for the SLHAData structure\n\
+\t\tgenerated " <> TimeStamp[] <> "\n\
+*)\n\n\
+" <> block/@ desc <>
+  define["nslhadata", offset]
+]
 
+
+SLHADefs::info = "Descriptor contains `` SLHA Blocks."
 
 SLHADefs[desc_] :=
 Block[ {offset = 0},
   Message[SLHADefs::info, Count[desc, _Rule]];
+  fmt[expr_] := StringReplace[
+    ToString[expr /. Pattern -> (#1 &), CForm],
+    {" " -> "", "bracket" -> ""}];
+  define[lhs_, rhs_] := {"#define ", fmt[lhs], " ", fmt[rhs], "\n"};
+  full[b_:blockname, lhs_] := {b, "_", lhs};
   "\
 #if 0\n\
 \tSLHADefs.h\n\
@@ -177,8 +207,8 @@ Block[ {offset = 0},
 #ifndef SLHADEFS_H\n\
 #define SLHADEFS_H\n\n\
 #define invalid (-999)\n\n\
-" <> block/@ desc <> "\
-#define nslhadata " <> str[offset] <> "\n\n\
+" <> block/@ desc <>
+  define["nslhadata", offset] <> "\n\
 #endif\n"
 ]
 
@@ -191,8 +221,8 @@ Block[ {blocks, labels, maxlen},
   MapIndexed[ {"#define ", #1, " ", ToString@@ #2, "\n"}&,
     labels ] <> "\n\
 \tinteger nblocks\n\
-\tparameter (nblocks = " <> str[Length[blocks]] <> ")\n\
-\tcharacter*" <> str[maxlen] <> " " <> dname <> "(nblocks)\n" <>
+\tparameter (nblocks = " <> fmt[Length[blocks]] <> ")\n\
+\tcharacter*" <> fmt[maxlen] <> " " <> dname <> "(nblocks)\n" <>
   Apply[ {"\tdata ", dname, "(", #2, ") /\"",
     prefix, ToUpperCase[#1], "\"/\n"}&,
     Drop[Transpose[{blocks, labels}], -1], 1 ]

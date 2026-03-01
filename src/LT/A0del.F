@@ -16,7 +16,44 @@
 	RealPrec Prec(A0delq)
 	external Prec(A0delq)
 
-	A0del = A0delq(m, mudim)
+	Prec(A0del) = Prec(A0delq)(m, mudim)
+	end
+
+************************************************************************
+
+	RealPrec function Prec(A0delsub)(m)
+	implicit none
+	RealPrec m
+
+#include "lt.h"
+
+	RealPrec Prec(A0delq)
+	external Prec(A0delq)
+
+	if( IfB0del .ne. 0 ) then
+	  A0delsub = Prec(A0delq)(m, mudim)
+	else
+	  A0delsub = 0
+	endif
+	end
+
+************************************************************************
+
+	RealPrec function Prec(A0delsubq)(m, Q)
+	implicit none
+	RealPrec m
+	RealPrec Q
+
+#include "lt.h"
+
+	RealPrec Prec(A0delq)
+	external Prec(A0delq)
+
+	if( IfB0del .ne. 0 ) then
+	  A0delsubq = Prec(A0delq)(m, Q)
+	else
+	  A0delsubq = 0
+	endif
 	end
 
 ************************************************************************
@@ -34,4 +71,3 @@
 	  A0delq = 0
 	endif
 	end
-

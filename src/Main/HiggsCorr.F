@@ -514,7 +514,7 @@ cP123	  mintest = min(mintest, abs(gw(i,1)))
      &    DHIGGS "minperm = "//Digit(HPerm(1,minperm))//
      &                         Digit(HPerm(2,minperm))//
      &                         Digit(HPerm(3,minperm)) ENDL
-	forall(i = 1:NNeutral)
+	forall(i = 1:hmix)
      &    XHiggs(i,1:NNeutral,2) = ZH(i,1:NNeutral,HPerm(i,minperm))
 #endif
 

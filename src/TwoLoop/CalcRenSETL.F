@@ -68,7 +68,7 @@
 	se2Rcat(:,:) = 0
 	dPhi = 0
 
-	if( tlx .eq. 0 ) goto 1
+	if( (tlx .eq. 0) .or. (newTL .eq. 1) ) goto 1
 
 	do ipi = 1, ipn
 	  if( debuglevel .ge. 3 )
@@ -161,8 +161,15 @@
      &      se2Rcat(h0HH,c) = R_h0HH(rA, cpf(dPhic))
 	enddo
 
-1	call TLhrSE(btest(tlx, asat))
-	call TLspSE(btest(tlx, atat))
+1	if( newTL .gt. 0) then
+	  call TLaqasSE(btest(tlx, asat))
+	  call TLaqaqSE(btest(tlx, atat))
+	else
+	  call TLhrSE(btest(tlx, asat))
+	  call TLspSE(btest(tlx, atat))
+	endif
+
+	if( newTL .eq. 0) then
 
 	if( tM2 .eq. tMT .or. tM2 .eq. tMT1 ) then
 	  dMT = 0
@@ -185,19 +192,6 @@
 	  se2Rcat(h0A0,sdMT) = R_h0A0(rA, cpo(dMTshift))
 	  se2Rcat(HHA0,sdMT) = R_HHA0(rA, cpo(dMTshift))
 
-* ensure that O(asat) h0h0 SM contribution is evaluated with alfasMT
-* (SM contribution taken form 1205.6497v2 eq. (20))
-	  if( (tlalfas .ne. 0)
-     &        .and. (tM2 .eq. tMT .or. tM2 .eq. tMT1)
-     &        .and. (loglevel .gt. 0) ) then
-	    se2Rcat(h0h0,sdMT) = se2Rcat(h0h0,sdMT)
-     &       -  (AlfasMT - Alfas2L)*Mf2(tM2,3)**2/(2*Pi**3*vev**2)
-     &         *(3*log(Mf2(tM2,3)/Mf2(3,3))**2 + log(Mf2(tM2,3)/Mf2(3,3)))
-     &       -  6*k1L*vev**2*(2*Mf2(tM2,3)/vev**2)**2
-     &                      *(1 + 2*log(Mf2(tM2,3)/Mf2(3,3)))
-     &                      *2/(3*pi)*(AlfasMT - Alfas2L)
-     &                               *(4 - 3*log(Mf2(tM2,3)/Mf2(3,3)))
-	  endif
 	  if( debuglevel .ge. 4 ) then
 	    DSELF "dMT shifts:" ENDL
 	    DSELF "dMT =", dMT ENDL
@@ -212,7 +206,7 @@
 
 * calc shifts if stop parameters are DRbar or MUE is not defined at mudim
 	bM1 = bM
-	if( drbarvars .eq. 0 ) then
+	if( stopDRbarvars .eq. 0 ) then
 	  call DRbar2LShifts(DRbarshift, mudim)
 	else
 	  call DRbar2LShifts(DRbarshift, QSf2(3))
@@ -236,6 +230,17 @@
 	  DSELF "shift(HmHp) =", se2Rcat(HmHp,sDRb) ENDL
 	endif
 
+	else
+	  do i = 1, se2Rn
+	    se2Rcat(:,asab) = 0D0
+	    se2Rcat(:,atab) = 0D0
+  	    se2Rcat(:,sDRb) = 0D0
+	    se2R(z0,i) = sum(se2Rcat(i,asat:atat))
+	    se2R(zM,i) = se2R(z0,i)
+	  enddo
+	endif
+
+* shifts from finite field renormalization
 	if( ior(finfieldren, tbrepara) .ne. 0 ) then
 	  call dZHfin2LShifts(dZHfinshift, mudim)
 	  se2Rcat(h0h0,sdZH) = C_h0h0(rBA, cpe(dZHfinshift))
@@ -257,20 +262,36 @@
 	  endif
 	endif
 
+
 	do i = 1, se2Rn
 	  se2R(z0,i) = sum(se2Rcat(i,asat:sDRb))
 	  se2R(zM,i) = se2R(z0,i) + se2Rcat(i,sdZH)
 	enddo
+
+
+* ensure that O(asat) h0h0 SM contribution is evaluated with alfasMT
+* (SM contribution taken form 1205.6497v2 eq. (20))
+	if( (tlalfas .ne. 0)
+     &      .and. (tM2 .eq. tMT .or. tM2 .eq. tMT1)
+     &      .and. (loglevel .gt. 0) ) then
+	  se2R(zRan,h0h0) = se2R(zRan,h0h0)
+     &       -  (AlfasMT - Alfas2L)*Mf2(tM2,3)**2/(2*Pi**3*vev**2)
+     &         *(3*log(Mf2(tM2,3)/Mf2(3,3))**2 + log(Mf2(tM2,3)/Mf2(3,3)))
+     &       -  6*k1L*vev**2*(2*Mf2(tM2,3)/vev**2)**2
+     &                      *(1 + 2*log(Mf2(tM2,3)/Mf2(3,3)))
+     &                      *2/(3*pi)*(AlfasMT - Alfas2L)
+     &                               *(4 - 3*log(Mf2(tM2,3)/Mf2(3,3)))
+	endif
 
 * add Im(se1L)*Im(dse1L) to dMA02/dMHmHp2 CT
 * NB: seRgl = seUgl here since RC not computed yet but need Im only
 	if( dmtlimim .ne. 0 ) then
 	  call CalcSEgl(Msqgl(inputmass), SEKey(inputmass),
      &                                    SEKey(inputmass))
+	  dM2imxim = Im(seRgl(zRan,inputmass))*Im(dseRgl(zRan,inputmass))
 	  if( debuglevel .gt. 4 ) then
 	    DSELF "dMA02/dMHmHp2 Im(se)*Im(dse) =", dM2imxim(zO) ENDL
 	  endif
-	  dM2imxim = Im(seRgl(zRan,inputmass))*Im(dseRgl(zRan,inputmass))
 	  if( dmtlimim .eq. 2 ) then
 	    call CalcRCgl()
 	    if( inputmass .eq. A0A0 ) then

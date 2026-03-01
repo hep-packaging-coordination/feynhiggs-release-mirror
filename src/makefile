@@ -22,7 +22,7 @@ MAIN = SetFlags.o RetrieveFlags.o \
   Couplings.o SelectUZ.o SelectIpol.o \
   Constraints.o EWPO.o Flavour.o \
   HiggsProd.o CalcSE.o CalcSEgl.o AddSelf.o AddExt.o Error.o \
-  DRbartoOS.o DeltaMT.o AlphaS.o MDcorr.o Deltab2L.o \
+  DRbartoOS.o DRbartoMDRbar.o DeltaMT.o AlphaS.o MDcorr.o Deltab2L.o \
   Output.o OutputSLHA.o
 #MAIN += gghNLO.o
 #MAIN += DRbar2OS_t.o
@@ -37,7 +37,7 @@ REC = RecordIndex.o ClearRecord.o \
 LT = cache.o ini.o spence.o eta.o A0.o \
   Bfpv.o B0.o B1.o B00.o B11.o DB0.o DB1.o DB00.o DB11.o \
   C0.o Cget.o CDz.o \
-  A0del.o myG.o TF.o T134.o T134p.o
+  A0del.o B0del.o myG.o TF.o T134.o T134p.o Tred.o Ored.o
 #LT += B001.o B111.o DB001.o D0.o Dget.o
 
 B0.o B1.o B00.o B11.o DB0.o DB1.o DB00.o DB11.o B001.o B111.o DB001.o: Bcoeff.F
@@ -123,7 +123,36 @@ TLSP = TLsp.o TLsp_atat_c1.o TLsp_atat_c2.o \
   TLsp_atat_e1.o TLsp_atat_e2.o TLsp_atat_e3.o \
   TLsp_atat_o1.o TLsp_atat_o2.o
 
-TWOLOOP = $(TLPS) $(TLHR) $(TLSP) \
+TLAQAS = TLaqas.o TLaqas_coupl.o TLaqas_renconst_1L.o \
+  TLaqas_renconst_1L_div.o TLaqas_renconst_1L_Q.o \
+  TLaqas_renconst_1L_DR.o TLaqas_renconst_1L_MDR.o \
+  TLaqas_renconst_1L_OS.o TLaqas_renconst_1L_MS.o \
+  TLaqas_renconst_1L_scheme.o TLaqas_renconst_1L_dep.o \
+  TLaqas_renconst_2L.o TLaqas_se_abas_hjhk_susy.o \
+  TLaqas_se_abas_hjhk_thdm.o TLaqas_se_atas_hjhk_susy.o \
+  TLaqas_se_atas_hjhk_thdm.o TLaqas_sect_abas_hjhk_susy.o \
+  TLaqas_sect_abas_hjhk_thdm.o TLaqas_sect_atas_hjhk_susy.o \
+  TLaqas_sect_atas_hjhk_thdm.o TLaqas_sect_HmHp_susy.o \
+  TLaqas_sect_HmHp_thdm.o TLaqas_se_HmHp_susy.o \
+  TLaqas_se_HmHp_thdm.o TLaqas_tad_abas_hj_susy.o \
+  TLaqas_tad_abas_hj_thdm.o TLaqas_tad_atas_hj_susy.o \
+  TLaqas_tad_atas_hj_thdm.o TLaqas_tadct_abas_hj_susy.o \
+  TLaqas_tadct_abas_hj_thdm.o TLaqas_tadct_atas_hj_susy.o \
+  TLaqas_tadct_atas_hj_thdm.o
+
+TLAQAQ = TLaqaq.o TLaqaq_coupl.o TLaqaq_renconst_1L.o \
+  TLaqaq_renconst_1L_div.o TLaqaq_renconst_1L_Q.o \
+  TLaqaq_renconst_1L_DR.o TLaqaq_renconst_1L_OS.o \
+  TLaqaq_renconst_1L_MS.o TLaqaq_renconst_1L_scheme.o \
+  TLaqaq_renconst_1L_dep.o TLaqaq_renconst_2L.o \
+  TLaqaq_se_hjhk_susy.o TLaqaq_se_hjhk_thdm.o \
+  TLaqaq_sect_hjhk_susy.o TLaqaq_sect_hjhk_thdm.o \
+  TLaqaq_se_HmHp_susy.o TLaqaq_se_HmHp_thdm.o \
+  TLaqaq_sect_HmHp_susy.o TLaqaq_sect_HmHp_thdm.o \
+  TLaqaq_tad_hj_susy.o TLaqaq_tad_hj_thdm.o \
+  TLaqaq_tadct_hj_susy.o TLaqaq_tadct_hj_thdm.o
+
+TWOLOOP = $(TLPS) $(TLHR) $(TLSP) $(TLAQAS) $(TLAQAQ) \
   CalcRenSETL.o InvTri.o Phi.o \
   DRbar2LShifts.o dZHfin2LShifts.o MTrepara.o
 
@@ -354,6 +383,10 @@ $(TLHR) MTrepara.o: TLhr.h TLhrvars.h TL.h FH.h looptools.h debug.h
 $(TLPS) CalcRenSETL.o: TLps.h TLpsvars.h TL.h FH.h looptools.h debug.h
 
 $(TLSP): TLsp.h TLspvars.h TL.h FH.h looptools.h debug.h
+
+$(TLAQAS): TLaqas.h TLaqasvars.h TL.h FH.h looptools.h debug.h
+
+$(TLAQAQ): TLaqaq.h TLaqaqvars.h TL.h FH.h looptools.h debug.h
 
 HiggsCorr.o AddSelf.o CalcRenSETL.o TLsp.o: HiggsRot.h
 

@@ -31,12 +31,20 @@
 	tMHin = log(MHin2)
 
 	llog = tSUSYOS - tTop
-	tMatch = tSUSYOS + 2*log(matchsf)
 	MSUSYOS = sqrt(MSUSYOS)
 
 	tCha = log(MCha(1)*MCha(2))
 	tChaq = tCha + 2*log(matchsf)
 	tGlu = log(MGl2)
+
+* set matching scale between MSSM and low-energy EFT
+	if( (MDRbar .gt. 0) .and. (stopDRbarvars .eq. 1)
+     &                      .and. (tGlu .gt. tSUSYOS) ) then
+	   QMatch = matchsf*MGl
+	else
+	   QMatch = matchsf*MSUSYOS
+	endif
+	tMatch = log(QMatch**2)
 
 * include 3L corrections for htMT
 	if( htMT3L .ne. 0 ) then
@@ -181,7 +189,7 @@
 	call SetTLalfas()
 
 	htMT2sub = 2*Mf2(tM2,3)/vev**2
-	if( drbarvars .eq. 1 ) then
+	if( stopDRbarvars .eq. 1 ) then
 	  XtDR = Xt_
 	  msMS = 1D0
 	else

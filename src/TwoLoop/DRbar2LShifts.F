@@ -81,7 +81,7 @@
 	U2s12 = U2s1(UCSbgl,EMUEC)
 
 	dMf1(3,3) = -(1/(6.D0*Pi**2)*
-     &      (drbarvars*(1/8.D0*
+     &      (stopDRbarvars*(1/8.D0*
      &           (MTgl*(-(3*Pi*
      &                   (Alfa1L*
      &                     (TB2*
@@ -213,7 +213,7 @@
      &    (3*Alfa1L*MTgl2*UStgl2(1,1)*UStgl2(1,2))/(MW2*SB2*SW2)
 
 	dMSfsq1(1,1,3,3) =
-     &   1/(6.D0*Pi**2)*(drbarvars*
+     &   1/(6.D0*Pi**2)*(stopDRbarvars*
      &       (3*Pi*(Alfa1L*
      &            (1/4.D0*(S2B**2*
      &                 (Re(B0q11)*
@@ -330,7 +330,7 @@
      &    MTgl*XtglC*USbgl(2,1)*UStglC(2,2)
 
 	dMSfsq1(1,2,3,3) =
-     &   1/(96.D0*Pi**2)*(drbarvars*
+     &   1/(96.D0*Pi**2)*(stopDRbarvars*
      &       (3*Pi*(Alfa1L*
      &            (MTgl2*S2B**2*
      &               (SB2*((4*U2c11*(MTgl + U2s13) -
@@ -418,7 +418,7 @@
      &       MBgl*SB2*YbglC*USbglC(2,2))*UStgl(2,1)
 
 	dMSfsq1(2,2,3,3) =
-     &   -(1/(6.D0*Pi**2)*(drbarvars*
+     &   -(1/(6.D0*Pi**2)*(stopDRbarvars*
      &         (-((3*Pi)/4.D0*
      &              (Alfa1L*
      &                (8*dup15*MStgl2(2)*Re(B1q15) -

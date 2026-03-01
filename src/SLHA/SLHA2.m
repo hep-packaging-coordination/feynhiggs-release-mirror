@@ -497,11 +497,56 @@ desc = {
     Text[{i,MSGLEN},{n,MAXMSG}],
     Len == MSGLEN CPLXSIZE
   },
+  HiggsCouplingsBosons[hcbos] -> {
+    gh1WW,
+    gh2WW,
+    gh3WW,
+    gh1ZZ,
+    gh2ZZ,
+    gh3ZZ,
+    gh1gg,
+    gh2gg,
+    gh3gg,
+    gh1h1Z,
+    gh2h1Z,
+    gh2h2Z,
+    gh3h1Z,
+    gh3h2Z,
+    gh3h3Z
+  },
+  HiggsCouplingsFermions[hcferm] -> {
+    gh1bbS,
+    gh1bbA,
+    gh2bbS,
+    gh2bbA,
+    gh3bbS,
+    gh3bbA,
+    gh1ttS,
+    gh1ttA,
+    gh2ttS,
+    gh2ttA,
+    gh3ttS,
+    gh3ttA,
+    gh1tautauS,
+    gh1tautauA,
+    gh2tautauS,
+    gh2tautauA,
+    gh3tautauS,
+    gh3tautauA
+  },
+  ChargedHiggsLHC8[chxs8] -> {
+    xstbHp
+  },
+  ChargedHiggsLHC13[chxs13] -> {
+    xstbHp
+  },
   Decays[tecys] -> {
     Data[{n,4096}]
   }
 }
 
+
+WriteString["SLHAIndices.m", SLHAIndices[desc]]
 
 WriteString["SLHADefs.h", SLHADefs[desc]]
 
@@ -510,5 +555,3 @@ WriteString["SLHAReadBlocks.h",
 
 WriteString["SLHAWriteBlocks.h",
   SLHANames[desc, "blockname", "IM"]]
-
-

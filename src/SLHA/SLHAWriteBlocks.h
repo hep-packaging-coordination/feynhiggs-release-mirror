@@ -82,11 +82,15 @@
 #define prcob 82
 #define spinf 83
 #define tcinf 84
-#define tecys 85
+#define hcbos 85
+#define hcferm 86
+#define chxs8 87
+#define chxs13 88
+#define tecys 89
 
 	integer nblocks
-	parameter (nblocks = 85)
-	character*12 blockname(nblocks)
+	parameter (nblocks = 89)
+	character*24 blockname(nblocks)
 	data blockname(modse) /"IMMODSEL"/
 	data blockname(sminp) /"IMSMINPUTS"/
 	data blockname(minpa) /"IMMINPAR"/
@@ -171,3 +175,7 @@
 	data blockname(prcob) /"IMPRECOBS"/
 	data blockname(spinf) /"IMSPINFO"/
 	data blockname(tcinf) /"IMDCINFO"/
+	data blockname(hcbos) /"IMHIGGSCOUPLINGSBOSONS"/
+	data blockname(hcferm) /"IMHIGGSCOUPLINGSFERMIONS"/
+	data blockname(chxs8) /"IMCHARGEDHIGGSLHC8"/
+	data blockname(chxs13) /"IMCHARGEDHIGGSLHC13"/

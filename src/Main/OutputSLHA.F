@@ -36,7 +36,7 @@
 
 #include "DeltaAlfaTop.h"
 
-* Important: unlike the charged (s)fermions, PDG_Hp, PDG_W, and 
+* Important: unlike the charged (s)fermions, PDG_Hp, PDG_W, and
 * PDG_chargino{1,2} refer to *positive* particles.  This differs
 * from the FeynArts conventions adopted in FeynHiggs where
 * particles are generally negative and antiparticles positive.
@@ -68,6 +68,26 @@
 	data neu / PDG_neutralino1, PDG_neutralino2,
      &    PDG_neutralino3, PDG_neutralino4 /
 
+	RealType ghiWW, ghiZZ, ghigg, ghjhiZ, ghiffS, ghiffA
+
+	ghiWW(i) = abs(Coupling(H0VV(i,4))/CouplingSM(H0VV(i,4)))
+	ghiZZ(i) = abs(Coupling(H0VV(i,3))/CouplingSM(H0VV(i,3)))
+	ghigg(i) = merge(sqrt(Gamma(H0VV(i,5))/GammaSM(H0VV(i,5))), 0D0,
+     &                 GammaSM(H0VV(i,5)) .gt. 0.0D0)
+	ghjhiZ(j,i) = abs(H0HV(j,i))/sqrt(1/invAlfa0*Pi/CW2/(1.0D0-CW2))
+
+	ghiffS(i,t) = abs(  RCoupling(H0FF(i,t,3,3))
+     &                      /RCouplingSM(H0FF(i,t,3,3))
+     &                    + LCoupling(H0FF(i,t,3,3))
+     &                      /LCouplingSM(H0FF(i,t,3,3))
+     &                   )/2.0D0
+	ghiffA(i,t) = abs(  RCoupling(H0FF(i,t,3,3))
+     &                      /RCouplingSM(H0FF(i,t,3,3))
+     &                    - LCoupling(H0FF(i,t,3,3))
+     &                      /LCouplingSM(H0FF(i,t,3,3))
+     &                   )/2.0D0
+
+	RealType prodxs(nprodxs)
 
 * R1, R2 (being nothing or 'c' = comment char) decide into how many
 * blocks the SLHA data are redundantly written, this is important
@@ -458,7 +478,7 @@ R1	  Af_Q(t) = QSf(t)
 
 *** bit 8: Other Constraints
 
-8	if( .not. btest(key, 8) ) return
+8	if( .not. btest(key, 8) ) goto 9
 
 	call FHConstraints(error,
      &    PrecObs_gminus2mu,
@@ -467,5 +487,69 @@ R1	  Af_Q(t) = QSf(t)
 	if( error .ne. 0 ) return
 
 	if( ccb .ne. 0 ) Warning("Colour-breaking minimum detected")
-	end
 
+*** bit 9: HB/HS blocks
+
+9	if( .not. btest(key, 9) ) return
+
+	HiggsCouplingsBosons_gh1WW =  ghiWW(1)
+	HiggsCouplingsBosons_gh2WW =  ghiWW(2)
+	HiggsCouplingsBosons_gh3WW =  ghiWW(3)
+
+	HiggsCouplingsBosons_gh1ZZ =  ghiZZ(1)
+	HiggsCouplingsBosons_gh2ZZ =  ghiZZ(2)
+	HiggsCouplingsBosons_gh3ZZ =  ghiZZ(3)
+
+	HiggsCouplingsBosons_gh1gg =  ghigg(1)
+	HiggsCouplingsBosons_gh2gg =  ghigg(2)
+	HiggsCouplingsBosons_gh3gg =  ghigg(3)
+
+	HiggsCouplingsBosons_gh1h1Z =  ghjhiZ(1,1)
+	HiggsCouplingsBosons_gh2h1Z =  ghjhiZ(2,1)
+	HiggsCouplingsBosons_gh2h2Z =  ghjhiZ(2,2)
+	HiggsCouplingsBosons_gh3h1Z =  ghjhiZ(3,1)
+	HiggsCouplingsBosons_gh3h2Z =  ghjhiZ(3,2)
+	HiggsCouplingsBosons_gh3h3Z =  ghjhiZ(3,3)
+
+	HiggsCouplingsFermions_gh1tautauS = ghiffS(1,2)
+	HiggsCouplingsFermions_gh1tautauA = ghiffA(1,2)
+	HiggsCouplingsFermions_gh1ttS     = ghiffS(1,3)
+	HiggsCouplingsFermions_gh1ttA     = ghiffA(1,3)
+	HiggsCouplingsFermions_gh1bbS     = ghiffS(1,4)
+	HiggsCouplingsFermions_gh1bbA     = ghiffA(1,4)
+
+	HiggsCouplingsFermions_gh2tautauS = ghiffS(2,2)
+	HiggsCouplingsFermions_gh2tautauA = ghiffA(2,2)
+	HiggsCouplingsFermions_gh2ttS     = ghiffS(2,3)
+	HiggsCouplingsFermions_gh2ttA     = ghiffA(2,3)
+	HiggsCouplingsFermions_gh2bbS     = ghiffS(2,4)
+	HiggsCouplingsFermions_gh2bbA     = ghiffA(2,4)
+
+	HiggsCouplingsFermions_gh3tautauS = ghiffS(3,2)
+	HiggsCouplingsFermions_gh3tautauA = ghiffA(3,2)
+	HiggsCouplingsFermions_gh3ttS     = ghiffS(3,3)
+	HiggsCouplingsFermions_gh3ttA     = ghiffA(3,3)
+	HiggsCouplingsFermions_gh3bbS     = ghiffS(3,4)
+	HiggsCouplingsFermions_gh3bbA     = ghiffA(3,4)
+
+	call FHHiggsProd(error, 7D0, prodxs)
+	print *, "error", error, tHm, tHm2, invalid
+	if( error .ne. 0 ) then
+	  ChargedHiggsLHC8_xstbHp = invalid
+	elseif( tHm .ne. invalid) then
+	  ChargedHiggsLHC8_xstbHp = tHm
+	else
+	  ChargedHiggsLHC8_xstbHp = tHm2
+	endif
+
+	call FHHiggsProd(error, 13D0, prodxs)
+	print *, "error", error, tHm, tHm2, invalid
+	if( error .ne. 0 ) then
+	  ChargedHiggsLHC13_xstbHp = invalid
+	elseif( tHm .ne. invalid) then
+	  ChargedHiggsLHC13_xstbHp = tHm
+	else
+	  ChargedHiggsLHC13_xstbHp = tHm2
+	endif
+
+	end
