@@ -162,8 +162,17 @@
 :Evaluate: FHError::usage =
 	"FHError is an error message returned by FeynHiggs."
 
+:Evaluate: SLHARead::usage =
+	"SLHARead reads an SLHA data structure from file."
+
+:Evaluate: SLHAWrite::usage =
+	"SLHAWrite writes an SLHA data structure to file."
+
+:Evaluate: SLHAData::usage =
+	"SLHAData contains an SLHA data structure."
+
 :Evaluate: General::badsyntax =
-	"Probably not all arguments have numerical values."
+	"Argument mismatch (probably not all arguments have numerical values)."
 
 :Evaluate: MapIndexed[(SEKey[#] = 2^(#2[[1]] - 1))&,
 	SelfID = {h0h0, HHHH, A0A0, HmHp,
@@ -224,9 +233,11 @@
 
 :Evaluate: Begin["`Private`"]
 
+:Evaluate: FeynHiggs`FHWrite[s_String] := WriteString[$Output, s]
+
 :Evaluate: FeynHiggs`FHAbort[f_Symbol] := (Message[f::badsyntax]; Abort[])
 
-:Evaluate: FeynHiggs`FHWrite[s_String] := WriteString[$Output, s]
+:Evaluate: mSetAbort[f_Symbol] := _f := FHAbort[f]
 
 :Begin:
 :Function: mFHSetFlags
@@ -244,7 +255,7 @@
 
 :Evaluate: FHSetFlags[s_String] := FHSetFlagsString[s]
 
-:Evaluate: _FHSetFlags := FHAbort[FHSetFlags]
+:Evaluate: mSetAbort[FHSetFlags]
 
 :Begin:
 :Function: mFHSetFlagsString
@@ -254,7 +265,7 @@
 :ReturnType: Manual
 :End:
 
-:Evaluate: _FHSetFlagsString := FHAbort[FHSetFlagsString]
+:Evaluate: mSetAbort[FHSetFlagsString]
 
 :Begin:
 :Function: mFHRetrieveFlags
@@ -264,7 +275,7 @@
 :ReturnType: Manual
 :End:
 
-:Evaluate: _FHRetrieveFlags := FHAbort[FHRetrieveFlags]
+:Evaluate: mSetAbort[FHRetrieveFlags]
 
 :Begin:
 :Function: mFHRetrieveFlagsString
@@ -274,7 +285,7 @@
 :ReturnType: Manual
 :End:
 
-:Evaluate: _FHRetrieveFlagsString := FHAbort[FHRetrieveFlagsString]
+:Evaluate: mSetAbort[FHRetrieveFlagsString]
 
 :Begin:
 :Function: mFHSetSMPara
@@ -296,7 +307,7 @@
 :ReturnType: Manual
 :End:
 
-:Evaluate: _FHSetSMPara := FHAbort[FHSetSMPara]
+:Evaluate: mSetAbort[FHSetSMPara]
 
 :Begin:
 :Function: mFHRetrieveSMPara
@@ -306,7 +317,7 @@
 :ReturnType: Manual
 :End:
 
-:Evaluate: _FHRetrieveSMPara := FHAbort[FHRetrieveSMPara]
+:Evaluate: mSetAbort[FHRetrieveSMPara]
 
 :Begin:
 :Function: mFHGetSMPara
@@ -316,7 +327,7 @@
 :ReturnType: Manual
 :End:
 
-:Evaluate: _FHGetSMPara := FHAbort[FHGetSMPara]
+:Evaluate: mSetAbort[FHGetSMPara]
 
 :Begin:
 :Function: mFHSetPara
@@ -359,6 +370,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHSetPara]
+
 :Begin:
 :Function: mFHRetrievePara
 :Pattern: FHRetrievePara[]
@@ -366,6 +379,8 @@
 :ArgumentTypes: {}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHRetrievePara]
 
 :Begin:
 :Function: mFHRetrieveOSPara
@@ -375,13 +390,25 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHRetrieveOSPara]
+
 :Begin:
-:Function: mFHSetSLHA
-:Pattern: FHSetSLHA[file_]
+:Function: mFHSetSLHAfile
+:Pattern: FHSetSLHA[file_String]
 :Arguments: {file}
 :ArgumentTypes: {String}
 :ReturnType: Manual
 :End:
+
+:Begin:
+:Function: mFHSetSLHAdata
+:Pattern: FHSetSLHA[data_SLHAData]
+:Arguments: {FromSLHAData[data]}
+:ArgumentTypes: {RealList}
+:ReturnType: Manual
+:End:
+
+:Evaluate: mSetAbort[FHSetSLHA]
 
 :Begin:
 :Function: mFHSetLFV
@@ -410,6 +437,8 @@
   Real, Real, Real, Real, Real, Real}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHSetLFV]
 
 :Begin:
 :Function: mFHSetNMFV
@@ -454,6 +483,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHSetNMFV]
+
 :Begin:
 :Function: mFHRetrieveLFV
 :Pattern: FHRetrieveLFV[]
@@ -461,6 +492,8 @@
 :ArgumentTypes: {}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHRetrieveLFV]
 
 :Begin:
 :Function: mFHRetrieveNMFV
@@ -470,6 +503,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHRetrieveNMFV]
+
 :Begin:
 :Function: mFHGetPara
 :Pattern: FHGetPara[]
@@ -477,6 +512,8 @@
 :ArgumentTypes: {}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHGetPara]
 
 :Begin:
 :Function: mFHGetTLPara
@@ -486,6 +523,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHGetTLPara]
+
 :Begin:
 :Function: mFHGetQuarkMasses
 :Pattern: FHGetQuarkMasses[]
@@ -493,6 +532,8 @@
 :ArgumentTypes: {}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHGetQuarkMasses]
 
 :Begin:
 :Function: mFHGetFV
@@ -502,6 +543,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHGetFV]
+
 :Begin:
 :Function: mFHHiggsCorr
 :Pattern: FHHiggsCorr[]
@@ -509,6 +552,8 @@
 :ArgumentTypes: {}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHHiggsCorr]
 
 :Begin:
 :Function: mFHUncertainties
@@ -518,6 +563,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHUncertainties]
+
 :Begin:
 :Function: mFHCouplings
 :Pattern: FHCouplings[fast_:1]
@@ -525,6 +572,8 @@
 :ArgumentTypes: {Integer}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHCouplings]
 
 :Begin:
 :Function: mFHConstraints
@@ -534,6 +583,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHConstraints]
+
 :Begin:
 :Function: mFHEWPO
 :Pattern: FHEWPO[]
@@ -541,6 +592,8 @@
 :ArgumentTypes: {}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHEWPO]
 
 :Begin:
 :Function: mFHFlavour
@@ -550,6 +603,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHFlavour]
+
 :Begin:
 :Function: mFHHiggsProd
 :Pattern: FHHiggsProd[sqrts_]
@@ -557,6 +612,8 @@
 :ArgumentTypes: {Real}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHHiggsProd]
 
 :Begin:
 :Function: mFHGetSelf
@@ -566,6 +623,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHGetSelf]
+
 :Begin:
 :Function: mFHGetSelfOL
 :Pattern: FHGetSelfOL[p2_, key_, dkey_, ren_]
@@ -573,6 +632,8 @@
 :ArgumentTypes: {Real, Real, Integer, Integer, Integer}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHGetSelfOL]
 
 :Begin:
 :Function: mFHGetSelfTL
@@ -582,6 +643,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHGetSelfTL]
+
 :Begin:
 :Function: mFHGetSelfEFT
 :Pattern: FHGetSelfEFT[p2_, key_, dkey_, ren_]
@@ -590,6 +653,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHGetSelfEFT]
+
 :Begin:
 :Function: mFHGetSelfgl
 :Pattern: FHGetSelfgl[p2_, key_, dkey_, ren_]
@@ -597,6 +662,8 @@
 :ArgumentTypes: {Real, Real, Integer, Integer, Integer}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHGetSelfgl]
 
 :Evaluate: mSElist[sig_] := Transpose[Through[{Re, Im}[PadRight[sig, 16]]]]
 
@@ -608,6 +675,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHAddSelf]
+
 :Begin:
 :Function: mFHOutput
 :Pattern: FHOutput[file_, key_, sqrts_:0]
@@ -616,13 +685,25 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHOutput]
+
 :Begin:
-:Function: mFHOutputSLHA
-:Pattern: FHOutputSLHA[file_, key_]
+:Function: mFHOutputSLHAfile
+:Pattern: FHOutputSLHA[file_String, key_]
 :Arguments: {file, key}
 :ArgumentTypes: {String, Integer}
 :ReturnType: Manual
 :End:
+
+:Begin:
+:Function: mFHOutputSLHAdata
+:Pattern: FHOutputSLHA[data_SLHAData, key_]
+:Arguments: {FromSLHAData[data], key}
+:ArgumentTypes: {RealList, Integer}
+:ReturnType: Manual
+:End:
+
+:Evaluate: mSetAbort[FHOutputSLHA]
 
 :Begin:
 :Function: mFHClearRecord
@@ -632,6 +713,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHClearRecord]
+
 :Begin:
 :Function: mFHLoopRecord
 :Pattern: FHLoopRecord[FHRecord[para__List]]
@@ -639,6 +722,8 @@
 :ArgumentTypes: {RealList}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHLoopRecord]
 
 :Begin:
 :Function: mFHSetRecord
@@ -648,6 +733,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHSetRecord]
+
 :Begin:
 :Function: mFHRetrieveRecord
 :Pattern: FHRetrieveRecord[FHRecord[para__List], iX_]
@@ -655,6 +742,8 @@
 :ArgumentTypes: {RealList, Integer}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHRetrieveRecord]
 
 :Begin:
 :Function: mFHRecordIndex
@@ -664,6 +753,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHRecordIndex]
+
 :Begin:
 :Function: mFHReadRecord
 :Pattern: FHReadRecord[file_]
@@ -671,6 +762,8 @@
 :ArgumentTypes: {String}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHReadRecord]
 
 :Begin:
 :Function: mFHSLHARecord
@@ -680,6 +773,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHSLHARecord]
+
 :Begin:
 :Function: mFHLoadTable
 :Pattern: FHLoadTable[file_]
@@ -687,6 +782,8 @@
 :ArgumentTypes: {String}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHLoadTable]
 
 :Begin:
 :Function: mFHTableRecord
@@ -696,6 +793,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHTableRecord]
+
 :Begin:
 :Function: mFHSetDebug
 :Pattern: FHSetDebug[debuglevel_]
@@ -704,21 +803,27 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHSetDebug]
+
 :Begin:
 :Function: mFHSetDebugFile
-:Pattern: FHSetDebugFile[debugfile_]
-:Arguments: {debugfile}
+:Pattern: FHSetDebugFile[file_]
+:Arguments: {file}
 :ArgumentTypes: {String}
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHSetDebugFile]
+
 :Begin:
 :Function: mFHSetParaFile
-:Pattern: FHSetParaFile[parafile_]
-:Arguments: {parafile}
+:Pattern: FHSetParaFile[file_]
+:Arguments: {file}
 :ArgumentTypes: {String}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHSetParaFile]
 
 :Begin:
 :Function: mFHSelectUZ
@@ -728,6 +833,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHSelectUZ]
+
 :Begin:
 :Function: mFHSelectIpol
 :Pattern: FHSelectIpol[xt_, xb_]
@@ -735,6 +842,8 @@
 :ArgumentTypes: {Integer, Integer}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHSelectIpol]
 
 :Begin:
 :Function: mFHAlphaS
@@ -744,6 +853,8 @@
 :ReturnType: Manual
 :End:
 
+:Evaluate: mSetAbort[FHAlphaS]
+
 :Begin:
 :Function: mFHRunQCD
 :Pattern: FHRunQCD[Qto_, mfrom_, Qfrom_]
@@ -751,6 +862,8 @@
 :ArgumentTypes: {Real, Real, Real}
 :ReturnType: Manual
 :End:
+
+:Evaluate: mSetAbort[FHRunQCD]
 
 :Begin:
 :Function: mFHSetEnv
@@ -760,6 +873,28 @@
 :ReturnType: Integer
 :End:
 
+:Evaluate: mSetAbort[FHSetEnv]
+
+:Begin:
+:Function: mSLHARead
+:Pattern: SLHARead[file_]
+:Arguments: {file}
+:ArgumentTypes: {String}
+:ReturnType: Manual
+:End:
+
+:Evaluate: mSetAbort[SLHARead]
+
+:Begin:
+:Function: mSLHAWrite
+:Pattern: SLHAWrite[data_SLHAData, file_]
+:Arguments: {FromSLHAData[data], file}
+:ArgumentTypes: {RealList, String}
+:ReturnType: Manual
+:End:
+
+:Evaluate: mSetAbort[SLHAWrite]
+
 :Evaluate: CTensor[a_, dims_] :=
   RTensor[Apply[Complex, Partition[a, 2], 1], dims]
 
@@ -768,11 +903,16 @@
 
 :Evaluate: Format[_FHRecord] := "-FHRecord-"
 
+:Evaluate: Format[_SLHAData] := "-SLHAData-"
+
 :Evaluate: ToRecord[para_List] :=
 	FHRecord@@ Transpose[Partition[para, FHRecordN]]
 
-:Evaluate: Cases[ LinkPatterns[$CurrentLink],
-	_[s_[___]] :> (_s := FHAbort[s]) ]
+:Evaluate: FromSLHAData[data_SLHAData] :=
+	N[Flatten[{Re[#], Im[#]}&/@ List@@ data]]
+
+:Evaluate: ToSLHAData[data_List] :=
+	SLHAData@@ Complex@@@ Partition[data, 2]
 
 :Evaluate: End[]
 
@@ -784,7 +924,7 @@
 	MFeynHiggs.tm
 		the Mathematica frontend for FeynHiggs
 		this file is part of FeynHiggs
-		last modified 7 Jan 21 th
+		last modified 10 Mar 22 th
 */
 
 
@@ -970,11 +1110,9 @@ static void mFHSetFlags(cint mssmpart, cint higgsmix, cint p2approx,
   int error;
 
   CaptureStdout();
-
   FHSetFlags(&error,
     mssmpart, higgsmix, p2approx, looplevel, loglevel,
     runningMT, botResum, tlCplxApprox);
-
   MLPutStdout(stdlink);
 
   MLPutStatus(stdlink, error);
@@ -987,9 +1125,7 @@ static void mFHSetFlagsString(cchar *flags) {
   int error;
 
   CaptureStdout();
-
   FHSetFlagsString(&error, flags);
-
   MLPutStdout(stdlink);
 
   MLPutStatus(stdlink, error);
@@ -1004,11 +1140,9 @@ static void mFHRetrieveFlags(void) {
   int runningMT, botResum, tlCplxApprox;
 
   CaptureStdout();
-
   FHRetrieveFlags(&error,
     &mssmpart, &higgsmix, &p2approx, &looplevel, &loglevel,
     &runningMT, &botResum, &tlCplxApprox);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1035,9 +1169,7 @@ static void mFHRetrieveFlagsString(void) {
   char flags[10];
 
   CaptureStdout();
-
   FHRetrieveFlagsString(&error, flags);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1052,9 +1184,7 @@ static void mFHSetSMPara(_Ma_(argsSetSMPara)) {
   int error;
 
   CaptureStdout();
-
   FHSetSMPara(&error, _Va_(argsSetSMPara));
-
   MLPutStdout(stdlink);
 
   MLPutStatus(stdlink, error);
@@ -1068,9 +1198,7 @@ static void mFHRetrieveSMPara(void) {
   _La_(argsSetSMPara);
 
   CaptureStdout();
-
   FHRetrieveSMPara(&error, _Ra_(argsSetSMPara));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1112,9 +1240,7 @@ static void mFHGetSMPara(void) {
   _La_(argsGetSMPara);
 
   CaptureStdout();
-
   FHGetSMPara(&error, _Ra_(argsGetSMPara));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1136,9 +1262,7 @@ static void mFHSetPara(_Ma_(argsOSPara), _Ma_(argsQPara)) {
   int error;
 
   CaptureStdout();
-
   FHSetPara(&error, _Va_(argsOSPara), _Va_(argsQPara));
-
   MLPutStdout(stdlink);
 
   MLPutStatus(stdlink, error);
@@ -1153,9 +1277,7 @@ static void mFHRetrievePara(void) {
   _La_(argsQPara);
 
   CaptureStdout();
-
   FHRetrievePara(&error, _Ra_(argsOSPara), _Ra_(argsQPara));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1220,9 +1342,7 @@ static void mFHRetrieveOSPara(void) {
   _La_(argsOSPara);
 
   CaptureStdout();
-
   FHRetrieveOSPara(&error, _Ra_(argsOSPara));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1278,16 +1398,30 @@ static void mFHRetrieveOSPara(void) {
 
 /******************************************************************/
 
-static void mFHSetSLHA(cchar *file) {
+static void mFHSetSLHAfile(cchar *file) {
   int error;
   COMPLEX slhadata[nslhadata];
 
   CaptureStdout();
-
   SLHARead(&error, slhadata, file, 0);
   if( error == 0 ) FHSetSLHA(&error, slhadata);
-
   MLPutStdout(stdlink);
+
+  MLPutStatus(stdlink, error);
+  MLEndPacket(stdlink);
+}
+
+/******************************************************************/
+
+static void mFHSetSLHAdata(RealType *slhadata, len_t sd_len) {
+  int error;
+
+  if( sd_len != 2*nslhadata ) error = -1;
+  else {
+    CaptureStdout();
+    FHSetSLHA(&error, (COMPLEX *)slhadata);
+    MLPutStdout(stdlink);
+  }
 
   MLPutStatus(stdlink, error);
   MLEndPacket(stdlink);
@@ -1299,9 +1433,7 @@ static void mFHSetLFV(_Ma_(argsSetLFV)) {
   int error;
 
   CaptureStdout();
-
   FHSetLFV(&error, _Va_(argsSetLFV));
-
   MLPutStdout(stdlink);
 
   MLPutStatus(stdlink, error);
@@ -1315,9 +1447,7 @@ static void mFHRetrieveLFV(void) {
   _La_(argsSetLFV);
 
   CaptureStdout();
-
   FHRetrieveLFV(&error, _Ra_(argsSetLFV));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1350,9 +1480,7 @@ static void mFHSetNMFV(_Ma_(argsSetNMFV)) {
   int error;
 
   CaptureStdout();
-
   FHSetNMFV(&error, _Va_(argsSetNMFV));
-
   MLPutStdout(stdlink);
 
   MLPutStatus(stdlink, error);
@@ -1366,9 +1494,7 @@ static void mFHRetrieveNMFV(void) {
   _La_(argsSetNMFV);
 
   CaptureStdout();
-
   FHRetrieveNMFV(&error, _Ra_(argsSetNMFV));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1414,9 +1540,7 @@ static void mFHGetPara(void) {
   _La_(argsGetPara);
 
   CaptureStdout();
-
   FHGetPara(&error, &nmfv, _Ra_(argsGetPara));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1479,9 +1603,7 @@ static void mFHGetTLPara(void) {
   _La_(argsGetTLPara);
 
   CaptureStdout();
-
   FHGetTLPara(&error, _Ra_(argsGetTLPara));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1511,9 +1633,7 @@ static void mFHGetQuarkMasses(void) {
   _La_(argsGetQuarkMasses);
 
   CaptureStdout();
-
   FHGetQuarkMasses(&error, _Ra_(argsGetQuarkMasses));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1537,9 +1657,7 @@ static void mFHGetFV(void) {
   _La_(argsGetFV);
 
   CaptureStdout();
-
   FHGetFV(&error, _Ra_(argsGetFV));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1571,9 +1689,7 @@ static void mFHHiggsCorr(void) {
   _La_(argsHiggsCorr);
 
   CaptureStdout();
-
   FHHiggsCorr(&error, _Ra_(argsHiggsCorr));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1601,9 +1717,7 @@ static void mFHUncertainties(void) {
   _La_(argsUncertainties);
 
   CaptureStdout();
-
   FHUncertainties(&error, _Ra_(argsUncertainties));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1631,9 +1745,7 @@ static void mFHCouplings(cint fast) {
   _La_(argsCouplings);
 
   CaptureStdout();
-
   FHCouplings(&error, _Ra_(argsCouplings), fast);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1677,8 +1789,8 @@ static void mFHCouplings(cint fast) {
     MLPutArray3(RCoupling, H0ChaCha, 3,2,2);
     MLPutArray3(LCoupling, H0NeuNeu, 3,4,4);
     MLPutArray3(RCoupling, H0NeuNeu, 3,4,4);
-    MLPutArray2(LCoupling, HpNeuCha, 4,3);
-    MLPutArray2(RCoupling, HpNeuCha, 4,3);
+    MLPutArray2(LCoupling, HpNeuCha, 4,2);
+    MLPutArray2(RCoupling, HpNeuCha, 4,2);
     MLPutArray2(Coupling,  H0HV,     3,3);
     MLPutArray1(Coupling,  HpHV,     3);
     MLPutArray3(Coupling,  H0HH,     3,4,4);
@@ -1746,9 +1858,7 @@ static void mFHConstraints(void) {
   _La_(argsConstraints);
 
   CaptureStdout();
-
   FHConstraints(&error, _Ra_(argsConstraints), &ccb);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1772,9 +1882,7 @@ static void mFHEWPO(void) {
   _La_(argsEWPO);
 
   CaptureStdout();
-
   FHEWPO(&error, _Ra_(argsEWPO));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1799,9 +1907,7 @@ static void mFHFlavour(void) {
   _La_(argsFlavour);
 
   CaptureStdout();
-
   FHFlavour(&error, _Ra_(argsFlavour));
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1826,9 +1932,7 @@ static void mFHHiggsProd(cRealType sqrts) {
   RealType prodxs[nprodxs];
 
   CaptureStdout();
-
   FHHiggsProd(&error, sqrts, prodxs);
-
   MLPutStdout(stdlink);
 
 #define ProdXS(channel) \
@@ -1909,9 +2013,7 @@ static void mFHGetSelf(_Mc_(k2,[1]), cint key, cint dkey, cint ren) {
   ComplexType sig[nsig], dsig[nsig];
 
   CaptureStdout();
-
   FHGetSelf(&error, _Vc_(k2,[1]), key, sig, dkey, dsig, ren);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1927,9 +2029,7 @@ static void mFHGetSelfOL(_Mc_(k2,[1]), cint key, cint dkey, cint ren) {
   ComplexType sig[nsig], dsig[nsig];
 
   CaptureStdout();
-
   FHGetSelfOL(&error, _Vc_(k2,[1]), key, sig, dkey, dsig, ren);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1945,9 +2045,7 @@ static void mFHGetSelfTL(_Mc_(k2,[1]), cint key, cint dkey, cint ren) {
   ComplexType sig[nsig], dsig[nsig];
 
   CaptureStdout();
-
   FHGetSelfTL(&error, _Vc_(k2,[1]), key, sig, dkey, dsig, ren);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1963,9 +2061,7 @@ static void mFHGetSelfEFT(_Mc_(k2,[1]), cint key, cint dkey, cint ren) {
   ComplexType sig[nsig], dsig[nsig];
 
   CaptureStdout();
-
   FHGetSelfEFT(&error, _Vc_(k2,[1]), key, sig, dkey, dsig, ren);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1981,9 +2077,7 @@ static void mFHGetSelfgl(_Mc_(k2,[1]), cint key, cint dkey, cint ren) {
   ComplexType sig[nsig], dsig[nsig];
 
   CaptureStdout();
-
   FHGetSelfgl(&error, _Vc_(k2,[1]), key, sig, dkey, dsig, ren);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -1998,9 +2092,7 @@ static void mFHAddSelf(RealType *sig, len_t sig_len, cint flags) {
   int error;
 
   CaptureStdout();
-
   FHAddSelf(&error, sig_len/(2*nsig), (cComplexType *)sig, flags);
-
   MLPutStdout(stdlink);
 
   MLPutStatus(stdlink, error);
@@ -2013,9 +2105,7 @@ static void mFHOutput(cchar *file, cint key, cRealType sqrts) {
   int error;
 
   CaptureStdout();
-
   FHOutput(&error, file, key, sqrts);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -2026,20 +2116,39 @@ static void mFHOutput(cchar *file, cint key, cRealType sqrts) {
 
 /******************************************************************/
 
-static void mFHOutputSLHA(cchar *file, cint key) {
+static void mFHOutputSLHAfile(cchar *file, cint key) {
   int error;
   COMPLEX slhadata[nslhadata];
 
   CaptureStdout();
-
   SLHAClear(slhadata);
   FHOutputSLHA(&error, slhadata, key);
   if( error == 0 ) SLHAWrite(&error, slhadata, file);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
   else MLPutString(stdlink, file);
+
+  MLEndPacket(stdlink);
+}
+
+/******************************************************************/
+
+static void mFHOutputSLHAdata(RealType *slhadata, len_t sd_len, cint key) {
+  int error;
+
+  if( sd_len != 2*nslhadata ) error = -1;
+  else {
+    CaptureStdout();
+    FHOutputSLHA(&error, (COMPLEX *)slhadata, key);
+    MLPutStdout(stdlink);
+  }
+
+  if( error ) MLPutStatus(stdlink, error);
+  else {
+    MLPutFunction(stdlink, "FeynHiggs`Private`ToSLHAData", 1);
+    MLPutRealList(stdlink, slhadata, 2*nslhadata);
+  }
 
   MLEndPacket(stdlink);
 }
@@ -2050,9 +2159,7 @@ static void mFHRecordIndex(cchar *para) {
   int ind;
 
   CaptureStdout();
-
   FHRecordIndex(&ind, para);
-
   MLPutStdout(stdlink);
 
   MLPutInteger(stdlink, ind);
@@ -2065,9 +2172,7 @@ static void mFHClearRecord(void) {
   RealType record[nrecord];
 
   CaptureStdout();
-
   FHClearRecord(record);
-
   MLPutStdout(stdlink);
 
   MLPutFunction(stdlink, "FeynHiggs`Private`ToRecord", 1);
@@ -2083,9 +2188,7 @@ static void mFHReadRecord(cchar *file) {
   COMPLEX slhadata[nslhadata];
 
   CaptureStdout();
-
   FHReadRecord(&error, record, slhadata, file);
-
   MLPutStdout(stdlink);
 
 /* 0 = SLHA, 2 = FH file, all others are true errors */
@@ -2106,10 +2209,8 @@ static void mFHSLHARecord(cchar *file) {
   COMPLEX slhadata[nslhadata];
 
   CaptureStdout();
-
   SLHARead(&error, slhadata, file, 0);
   if( error == 0 ) FHSLHARecord(&error, record, slhadata);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -2188,9 +2289,7 @@ static void mFHLoadTable(cchar *file) {
   int error;
 
   CaptureStdout();
-
   FHLoadTable(&error, file);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -2225,9 +2324,7 @@ static void mFHTableRecord(RealType *record, len_t record_len,
 
 static void mFHSetDebug(cint debuglevel) {
   CaptureStdout();
-
   FHSetDebug(debuglevel);
-
   MLPutStdout(stdlink);
 
   MLPutSymbol(stdlink, "Null");
@@ -2236,11 +2333,9 @@ static void mFHSetDebug(cint debuglevel) {
 
 /******************************************************************/
 
-static void mFHSetDebugFile(cchar *debugfile) {
+static void mFHSetDebugFile(cchar *file) {
   CaptureStdout();
-
-  FHSetDebugFile(debugfile);
-
+  FHSetDebugFile(file);
   MLPutStdout(stdlink);
 
   MLPutSymbol(stdlink, "Null");
@@ -2249,11 +2344,9 @@ static void mFHSetDebugFile(cchar *debugfile) {
 
 /******************************************************************/
 
-static void mFHSetParaFile(cchar *parafile) {
+static void mFHSetParaFile(cchar *file) {
   CaptureStdout();
-
-  FHSetParaFile(parafile);
-
+  FHSetParaFile(file);
   MLPutStdout(stdlink);
 
   MLPutSymbol(stdlink, "Null");
@@ -2266,9 +2359,7 @@ static void mFHSelectUZ(cint uzint, cint uzext, cint mfeff) {
   int error;
 
   CaptureStdout();
-
   FHSelectUZ(&error, uzint, uzext, mfeff);
-
   MLPutStdout(stdlink);
 
   MLPutStatus(stdlink, error);
@@ -2281,9 +2372,7 @@ static void mFHSelectIpol(cint xt, cint xb) {
   int error;
 
   CaptureStdout();
-
   FHSelectIpol(&error, xt, xb);
-
   MLPutStdout(stdlink);
 
   MLPutStatus(stdlink, error);
@@ -2297,9 +2386,7 @@ static void mFHAlphaS(cRealType Q2) {
   RealType AlphaS;
 
   CaptureStdout();
-
   FHAlphaS(&error, &AlphaS, &nf, Q2);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -2323,9 +2410,7 @@ static void mFHRunQCD(cRealType Qto, cRealType mfrom, cRealType Qfrom) {
   RealType mto;
 
   CaptureStdout();
-
   FHRunQCD(&error, &mto, Qto, mfrom, Qfrom);
-
   MLPutStdout(stdlink);
 
   if( error ) MLPutStatus(stdlink, error);
@@ -2342,15 +2427,54 @@ static int mFHSetEnv(cchar *var, cchar *val) {
 
 /******************************************************************/
 
+static void mSLHARead(cchar *file) {
+  int error;
+  COMPLEX slhadata[nslhadata];
+
+  CaptureStdout();
+  SLHARead(&error, slhadata, file, 0);
+  MLPutStdout(stdlink);
+
+  if( error ) MLPutStatus(stdlink, error);
+  else {
+    MLPutFunction(stdlink, "FeynHiggs`Private`ToSLHAData", 1);
+    MLPutRealList(stdlink, (RealType *)slhadata, 2*nslhadata);
+  }
+
+  MLEndPacket(stdlink);
+}
+
+/******************************************************************/
+
+static void mSLHAWrite(RealType *slhadata, len_t sd_len, cchar *file) {
+  int error;
+
+  if( sd_len != 2*nslhadata ) error = -1;
+  else {
+    CaptureStdout();
+    SLHAWrite(&error, (COMPLEX *)slhadata, file);
+    MLPutStdout(stdlink);
+  }
+
+  if( error ) MLPutStatus(stdlink, error);
+  else MLPutString(stdlink, file);
+
+  MLEndPacket(stdlink);
+}
+
+/******************************************************************/
+
 static inline void openstdout() {
   int fd = open("/dev/null", O_WRONLY);
   dup2(fd, 1);
   close(fd);
 }
 
+/*
 static void __attribute__((constructor(4711))) make_sure_stdout_is_open() {
   if( fcntl(1, F_GETFD) == -1 ) openstdout();
 }
+*/
 
 /******************************************************************/
 

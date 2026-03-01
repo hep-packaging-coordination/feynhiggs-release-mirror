@@ -45,6 +45,13 @@ c Mgl = MSusy
      &            - 4*x**6*(1 - lnx2)
 
 	  lf = lf/x1**2
+	  if( MDRbar .gt. 0 ) then
+	    lf(1) = lf(1) - 2*x2*(lnx2 - 1)
+	    lf(2) = lf(2) - x2*(lnx2 - 1)
+	    lf(3) = lf(3) - x*(1 - lnx2)
+	    lf(4) = lf(4) - x*(1 - lnx2)
+	    lf(5) = lf(5) - 4*x2*(lnx2 - 1)
+	  endif
 	endif
 
 	dlam_asat4(1) = - 8/3D0*mueDR**4*lf(1)

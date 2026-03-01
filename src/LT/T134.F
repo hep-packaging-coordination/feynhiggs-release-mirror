@@ -30,10 +30,14 @@
 	RealPrec Prec(T134q), Prec(A0delq)
 	external Prec(T134q), Prec(A0delq)
 
-	Prec(T134sub) = Prec(T134q)(m1, m2, m3, mudim) -
-     &    Prec(A0delq)(m1, mudim) -
-     &    Prec(A0delq)(m2, mudim) -
-     &    Prec(A0delq)(m3, mudim)
+	if( IfB0del .ne. 0 ) then
+	  Prec(T134sub) = Prec(T134q)(m1, m2, m3, mudim)
+	else
+	  Prec(T134sub) = Prec(T134q)(m1, m2, m3, mudim) -
+     &      Prec(A0delq)(m1, mudim) -
+     &      Prec(A0delq)(m2, mudim) -
+     &      Prec(A0delq)(m3, mudim)
+	endif
 	end
 
 ************************************************************************

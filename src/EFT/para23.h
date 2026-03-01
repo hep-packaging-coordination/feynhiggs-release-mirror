@@ -65,9 +65,9 @@
 	call loopfun4H(lfmueDR, mueDR)
 	if( loglevel .gt. 2 ) then
 	  call TLthresholdasat(dlam_asatDR, MSQq, MSUq,
-     &                       xDR*sqrt(MSQq*MSUq), matchsf*MSUSYOS, iDR)
+     &                       xDR*sqrt(MSQq*MSUq), QMatch, iDR)
 	  call TLthresholdatatCoeff(clam_atatq, MSQq, MSUq, MUEq,
-     &                              matchsf*MSUSYOS)
+     &                              QMatch)
 	endif
 
 * evaluate 3L threshold correction using Himalaya

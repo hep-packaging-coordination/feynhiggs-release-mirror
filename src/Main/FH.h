@@ -331,24 +331,27 @@
 * Sf(*,16=bH) = Sdown with MB(Mh) for Decays	- set in Couplings.F
 * Sf(*,17=bHR) = Sdown with MB(Mh)/|1 + Db|	- set in Couplings.F
 
+* Sf(*,18=bOS) = Sdown with MB(MB)/|1 + Db| and OS sbottom para	- set in Couplings.F
+
 	integer tOS, bB
 	integer tT, tM3, tMT, tMT1, tMD
 	integer bBR, bTR, bTR1, bTRps, bTR1ps
-	integer tH, bH, bHR
+	integer tH, bH, bHR, bOS
 	parameter (tOS = 3, bB = 4)
 	parameter (tT = 5, tM3 = 6, tMT = 7, tMT1 = 8, tMD = 9)
 	parameter (bBR = 10, bTR = 11, bTR1 = 12)
 	parameter (bTRps = 13, bTR1ps = 14)
-	parameter (tH = 15, bH = 16, bHR = 17)
+	parameter (tH = 15, bH = 16, bHR = 17, bOS = 18)
 
 	integer SfSlots
 	integer*8 SfBase, SfIni
-	parameter (SfSlots = bHR, SfBase = 8, SfIni =
+	parameter (SfSlots = bOS, SfBase = 8, SfIni =
      &    SetSfIni(tT,3) + SetSfIni(tM3,3) + SetSfIni(tMT,3) +
      &    SetSfIni(tMT1,3) + SetSfIni(tMD,3) +
      &    SetSfIni(bBR,4) + SetSfIni(bTR,4) + SetSfIni(bTR1,4) +
      &    SetSfIni(bTRps,4) + SetSfIni(bTR1ps,4) +
-     &    SetSfIni(tH,3) + SetSfIni(bH,4) + SetSfIni(bHR,4))
+     &    SetSfIni(tH,3) + SetSfIni(bH,4) + SetSfIni(bHR,4) +
+     &    SetSfIni(bOS,4))
 
 	type MSfType
 * EigenSf depends on this order:
@@ -606,10 +609,11 @@
 	integer debuglevel, debugunit, paraunit
 	integer uzint, uzext, mfeff, ipolXt, ipolXb
 	integer tlpsmask, tlzeromask(se2Rc), loglevelmt, tldegatat
-	integer forceSU2, drbarmode, drbarvars, fopoleeq
+	integer forceSU2, drbarmode, stopDRbarvars, sbottomDRbarvars
+	integer fopoleeq, MDRbar
 	integer dmtlimim, finfieldren, tbrepara
 	integer stiffodesolver, seexp, decczero, htMT3L, thdmeft
-	integer uncmask(8), drbartopmass
+	integer uncmask(8), drbartopmass, newTL
 	integer tM1, tM2, bM, bMps, bM1, gM
 	RealType MUEscale
 	character*256 HimExe, extSE
@@ -627,10 +631,11 @@
      &    debuglevel, debugunit, paraunit,
      &    uzint, uzext, mfeff, ipolXt, ipolXb,
      &    tlpsmask, tlzeromask, loglevelmt, TLdegatat,
-     &    forceSU2, drbarmode, drbarvars, fopoleeq,
+     &    forceSU2, drbarmode, stopDRbarvars, sbottomDRbarvars,
+     &    fopoleeq, MDRbar,
      &    dmtlimim, finfieldren, tbrepara,
      &    stiffodesolver, seexp, decczero, htMT3L, thdmeft,
-     &    uncmask, drbartopmass,
+     &    uncmask, drbartopmass, newTL,
      &    tM1, tM2, bM, bMps, bM1, gM,
      &    HimExe, extSE
 

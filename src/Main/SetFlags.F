@@ -37,8 +37,7 @@
 	  print *, "------------------------------------------------------------------------------"
 	  print *, "FeynHiggs "//FHVERSION
 	  print *, "built on "//FHBUILDDATE
-	  print *, "H. Bahl, T. Hahn, S. Heinemeyer, W. Hollik, "
-	  print *, "S. Passehr, H. Rzehak, I. Sobolev, G. Weiglein"
+	  print *, "H. Bahl, T. Hahn, S. Heinemeyer, W. Hollik, S. Passehr, H. Rzehak, G. Weiglein"
 	  print *, "http://feynhiggs.de"
 	  print *, "------------------------------------------------------------------------------"
 	  blurb = .FALSE.
@@ -165,7 +164,11 @@ c	  call setfpu
 	print *, "env FHFORCESU2 ", forceSU2
 50	continue
 
-	drbarmode = 1
+
+*       0 -- convert all DRbar/MDRbgar input parameters to OS scheme
+*	1 -- use DRbar/MDRbar stops internally
+*	2 -- use DRbar/MDRbar stops and sbottoms internally
+	drbarmode = 2
 	call getenv("FHDRBARMODE", env)
 	read(env, *, end=60, err=60) drbarmode
 	print *, "env FHDRBARMODE ", drbarmode
@@ -284,6 +287,21 @@ c	  call setfpu
 	read(env, *, end=210, err=210) thdmeft
 	print *, "env FHTHDMEFT ", thdmeft
 210	continue
+
+	newTL = 1
+	call getenv("FHNEWTL", env)
+	read(env, *, end=220, err=220) newTL
+	print *, "env FHNEWTL ", newTL
+220	continue
+
+*       0 --  DRbar Xt, MQ3, MU3, MD3 as input,  DRbar used internally
+*	1 --  DRbar Xt, MQ3, MU3, MD3 as input, MDRbar used internally (conversion using DRbartoMDRbar routine)
+*	2 -- MDRbar Xt, MQ3, MU3, MD3 as input, MDRbar used internally
+	MDRbar = 1
+	call getenv("FHMDRBAR", env)
+	read(env, *, end=230, err=230) MDRbar
+	print *, "env FHMDRBAR ", MDRbar
+230	continue
 
 	call getenv("FHHIMEXC", HimExe)
 	if( HimExe(1:1) .ne. ' ' )

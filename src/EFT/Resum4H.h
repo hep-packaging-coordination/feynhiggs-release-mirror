@@ -100,7 +100,7 @@ c	equivalence (MSS0(tU(3),3), MStU)
 	equivalence (MSS0(4,3), MStU)
 
 	RealType MSUSYOS, MSUSYMS, tSUSYOS, tSUSYMS
-	RealType llog, tTop, tTopMS, tCha, tGlu, tmudim, tMatch
+	RealType llog, tTop, tTopMS, tCha, tGlu, tmudim, tMatch, QMatch
 	RealType tSS1, tSS2, tSQ, tSU
 	RealType tMHin, tMUE, tM_2
 	RealType xOS, xOS2, xOS1, xDR, xDR2, yOS, yOS2
@@ -147,7 +147,7 @@ c	equivalence (MSS0(tU(3),3), MStU)
 
 	common /resum4Hvars/
      &    MSUSYOS, MSUSYMS, tSUSYOS, tSUSYMS,
-     &    llog, tTop, tTopMS, tCha, tGlu, tmudim, tMatch,
+     &    llog, tTop, tTopMS, tCha, tGlu, tmudim, tMatch, QMatch,
      &    tSS1, tSS2, tSQ, tSU,
      &    tMHin, tMUE, tM_2,
      &    xOS, xOS2, xOS1, xDR, xDR2, yOS, yOS2,

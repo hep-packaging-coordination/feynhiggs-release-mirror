@@ -50,8 +50,8 @@
 	  tCha = tSUSYOS
 	endif
 
-	if( tGlu .lt. 0.9*tSUSYOS) then
-  	  Warning("low-energy gluino threshold not yet implemented for cTHDM-EFT calculation.")
+	if( (tGlu .lt. 0.9*tSUSYOS) .or. (tGlu .gt. 1.1*tSUSYOS)) then
+	  Warning("cTHDM-EFT calculation assumes Mgl ~ MSusy.")
 	endif
 
 * evaluate loopfunctions and parameters used in EFT calculation

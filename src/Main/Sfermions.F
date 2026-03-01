@@ -32,7 +32,7 @@
 
 #include "FH.h"
 #include "looptools.h"
-#define __SUBROUTINE__ "Sfermions"
+#define __SUBROUTINE__ "SfermionsDR"
 
 	RealType dMT
 	integer i, g
@@ -120,6 +120,171 @@
 	    endif
 	  endif
 	endif
+	end
+
+#undef __SUBROUTINE__
+
+************************************************************************
+
+	subroutine SbottomsDR(error)
+	implicit none
+	integer error
+
+#include "FH.h"
+#include "looptools.h"
+#define __SUBROUTINE__ "SbottomsDR"
+
+	integer g, fail, nf, pass
+	RealType Qqcd, Qew, AlfasQew, db2Lqcd, db2Lew
+	RealType MDAlfas(3,3), MDAlfa(3,3)
+	RealType Mdin(3), Mdbar(3)
+	ComplexType db, Mcorr(3,3), se(3,3,3)
+	ComplexType DL(3,3), DR(3,3)
+
+	RealType Deltab2L_ew, Deltab2L_qcd
+	external Deltab2L_ew, Deltab2L_qcd
+
+c need MSf2(1|2,tT,3) for calculation of deltab
+	call SfUpdate(error, X4(0,tT,3,3), SORT_SF)
+
+* MSb0gl = gaugeless sbottoms with MB = 0
+	MSb0gl2(1) = DSSbgl2(1) + DSSbgl2(2)
+	MSb0gl2(2) = DSSbgl2(2)
+	MSb0gl2(3) = -DSSbgl2(1)
+	MSb0gl2(4) = MSb0gl2(2) + MSb0gl2(1)
+	MSb0gl(1) = sqrt(MSb0gl2(1))
+	MSb0gl(2) = sqrt(MSb0gl2(2))
+
+	if( debuglevel .gt. 2 ) DPARA "MSb0gl =", MSb0gl(:) ENDL
+
+	call SfUpdate(error, X4(0,4,4,4), 1)
+	call SbglUpdate(error, 4)
+
+	DSS2(:,bTR,:) = DSS2(:,4,:)
+	Mf(bTR,3) = MB_MT
+	Mdin = Mf(bTR,:)
+
+	call GauginoMassesLargeTB
+	fail = 0
+	call SfUpdateLargeTB(fail)
+
+	if( botResum .eq. 2 ) then
+	  Qew = ((MSf(1,3,3) + MSf(2,3,3) + abs(MUE))/3)**2
+	  call AlphaS(AlfasQew, nf, Qew)
+	  Qqcd = ((MSdL(1,3) + MSdL(2,3) + MGl)/3)**2
+	else
+	  Qqcd = MSdL(1,3)*MSdL(2,3)
+	endif
+	call AlphaS(AlfasDb, nf, Qqcd)
+
+	if( DEBUGLEVEL .gt. 2 ) then
+	  DPARA "Delta b  Qqcd     =", sqrt(Qqcd)	ENDL
+	  DPARA "Delta b  as(Qqcd) =", AlfasDb		ENDL
+	endif
+
+	MDAlfas = AlfasDb
+	MDAlfa = AlfaGF
+
+	if( botResum .eq. 2 ) then
+	  if( sbottomDRbarvars .eq. 0 ) then
+	    db2Lqcd = AlfasDb/pi*Deltab2L_qcd(Qqcd, nf)
+	    MDAlfas(3,3) = AlfasDb*(1 + db2Lqcd)
+	    db2Lew = AlfasQew/pi*Deltab2L_ew(Qew)
+	    MDAlfa(3,3) = AlfaGF*(1 + db2Lew)
+	    if( debuglevel .gt. 2 ) then
+	      DPARA "Delta b  Qew      =", sqrt(Qew)	ENDL
+	      DPARA "Delta b  as(Qew)  =", AlfasQew	ENDL
+	      DPARA "Delta b  f^2L_QCD =", db2Lqcd	ENDL
+	      DPARA "Delta b  f^2L_ew  =", db2Lew	ENDL
+	    endif
+	  else
+	    Warning("2L Deltab corrections not available for DRbar input variables.")
+	  endif
+	endif
+
+#define MDseas(g1,g2,as,a) MDcorr(se(1,g1,g2), g1, g2, as, a, Mf2(3,3), Mf2(3,3))
+#define MDse(g1,g2) MDseas(g1,g2, MDAlfas(g1,g2), MDAlfa(g1,g2))
+
+	do g = 1, 3
+	  call MDse(g,g)
+	  Deltaf(bTR,g) = se(1,g,g)/Mf(bTR,g)
+	  Mf(bTR,g) = Mdin(g)/abs(1 + Deltaf(bTR,g))*
+     &      Re(1 - (se(2,g,g) + se(3,g,g))/2)
+	enddo
+
+	do pass = 1, 20
+	  db = Deltaf(bTR,3)
+	  if( debuglevel .ge. 2 ) then
+	    DPARA "============================"	ENDL
+	    DPARA "pass =", pass			ENDL
+	    DPARA "Deltaf(bTR,3) =", Deltaf(bTR,3)	ENDL
+	    DPARA "Mf(bTR,3) =", Mf(bTR,3)		ENDL
+	  endif
+
+	  call SfUpdateLargeTB(fail)
+	  if( botResum .eq. 2 ) then
+	    if( sbottomDRbarvars .eq. 0 ) then
+	      db2Lqcd = AlfasDb/pi*Deltab2L_qcd(Qqcd, nf)
+	      MDAlfas(3,3) = AlfasDb*(1 + db2Lqcd)
+	      db2Lew = AlfasQew/pi*Deltab2L_ew(Qew)
+	      MDAlfa(3,3) = AlfaGF*(1 + db2Lew)
+	      if( debuglevel .gt. 2 ) then
+	        DPARA "Delta b  f^2L_QCD =", db2Lqcd ENDL
+	        DPARA "Delta b  f^2L_ew  =", db2Lew  ENDL
+	      endif
+	    endif
+	  endif
+
+	  do g = 1, 3
+	    call MDse(1,g)
+	    call MDse(2,g)
+	    call MDse(3,g)
+	    Mcorr(:,g) = se(1,:,g) +
+     &        (Mf(bTR,:)*se(2,:,g) + Mf(bTR,g)*se(3,:,g))/2
+	    Deltaf(bTR,g) = se(1,g,g)/Mf(bTR,g)
+	    Mf(bTR,g) = Mdin(g)/abs(1 + Deltaf(bTR,g))*
+     &        Re(1 - (se(2,g,g) + se(3,g,g))/2)
+	    Mcorr(g,g) = Mcorr(g,g) + Mf(bTR,g)
+	  enddo
+
+	  call SVD(3, 3, Mcorr,3, Mdbar, DR,3, DL,3, 0)
+	  CKM = matmul(CKMin, DL)
+
+	  if( debuglevel .ge. 3 ) then
+	    DPARA "MDc1 =", Mdbar(1), Mdin(1) ENDL
+	    DPARA "MDc2 =", Mdbar(2), Mdin(2) ENDL
+	    DPARA "MDc3 =", Mdbar(3), Mdin(3) ENDL
+	  endif
+
+	  if( abs(Deltaf(bTR,3) - db) .lt. 1D-6 ) goto 99
+	enddo
+
+	Warning("resummation of MB did not converge")
+
+99	continue
+
+	if( fail .ne. 0 )
+     &    Error(error, "negative sbottom mass squares in Delta b")
+
+	call SfUpdate(error, X4(0,bTR,4,4), SORT_SF)
+	call SbglUpdate(error, bTR)
+cNMFV	Sf(bTRps) = Sf(bTR)
+
+* Delta_b with just the 1L corrections for subtraction in Hff:
+	DSS2(:,bTR1,:) = DSS2(:,4,:)
+	call MDseas(3,3, AlfasDb, AlfaGF)
+	forall(g = 1:3)
+	  Deltaf(bTR1,g) = se(1,g,g)/Mf(bTR,g)
+	  Mf(bTR1,g) = Mdin(g)*
+     &      Re(1 - Deltaf(bTR1,g) - (se(2,g,g) + se(3,g,g))/2)
+	endforall
+
+	call SfUpdate(error, X4(0,bTR1,4,4), SORT_SF)
+	call SbglUpdate(error, bTR1)
+cNMFV	Sf(bTR1ps) = Sf(bTR1)
+
+	Mf(bBR,:) = Mf(4,:)/abs(1 + Deltaf(bTR,:))
+	call SfUpdate(error, X4(0,bBR,4,4), 1)
 	end
 
 #undef __SUBROUTINE__
@@ -216,33 +381,13 @@ cNMFV	endif
 
 ************************************************************************
 
-	subroutine SfermionsOS(error)
+	subroutine StopsOS(error)
 	implicit none
 	integer error
 
 #include "FH.h"
 #include "looptools.h"
-#define __SUBROUTINE__ "SfermionsOS"
-
-	integer g, fail, nf, pass
-	RealType Qqcd, Qew, AlfasQew, db2Lqcd, db2Lew
-	RealType MDAlfas(3,3), MDAlfa(3,3)
-	RealType Mdin(3), Mdbar(3)
-	ComplexType db, Mcorr(3,3), se(3,3,3)
-	ComplexType DL(3,3), DR(3,3)
-
-	RealType Deltab2L_ew, Deltab2L_qcd
-	external Deltab2L_ew, Deltab2L_qcd
-
-* MSb0gl = gaugeless sbottoms with MB = 0
-	MSb0gl2(1) = DSSbgl2(1) + DSSbgl2(2)
-	MSb0gl2(2) = DSSbgl2(2)
-	MSb0gl2(3) = -DSSbgl2(1)
-	MSb0gl2(4) = MSb0gl2(2) + MSb0gl2(1)
-	MSb0gl(1) = sqrt(MSb0gl2(1))
-	MSb0gl(2) = sqrt(MSb0gl2(2))
-
-	if( debuglevel .gt. 2 ) DPARA "MSb0gl =", MSb0gl(:) ENDL
+#define __SUBROUTINE__ "StopsOS"
 
 	call SfUpdate(error, X4(0,3,3,3), 1)
 	call SfUpdate(error, X4(0,tT,3,3), SORT_SF)
@@ -250,128 +395,22 @@ cNMFV	endif
 	call StglUpdate(error, tMT)
 	if( Mf(tMT,3) .ne. Mf(tMT1,3) ) call StglUpdate(error, tMT1)
 
-	call SfUpdate(error, X4(0,4,4,4), 1)
-	call SbglUpdate(error, 4)
+	end
 
-	DSS2(:,bTR,:) = DSS2(:,4,:)
-	Mf(bTR,3) = MB_MT
-	Mdin = Mf(bTR,:)
+#undef __SUBROUTINE__
 
-	call GauginoMassesLargeTB
-	fail = 0
-	call SfUpdateLargeTB(fail)
+************************************************************************
 
-	if( botResum .eq. 2 ) then
-	  Qew = ((MSf(1,3,3) + MSf(2,3,3) + abs(MUE))/3)**2
-	  call AlphaS(AlfasQew, nf, Qew)
-	  Qqcd = ((MSdL(1,3) + MSdL(2,3) + MGl)/3)**2
-	else
-	  Qqcd = MSdL(1,3)*MSdL(2,3)
-	endif
-	call AlphaS(AlfasDb, nf, Qqcd)
+	subroutine SbottomsOS(error)
+	implicit none
+	integer error
 
-	if( DEBUGLEVEL .gt. 2 ) then
-	  DPARA "Delta b  Qqcd     =", sqrt(Qqcd)	ENDL
-	  DPARA "Delta b  as(Qqcd) =", AlfasDb		ENDL
-	endif
+#include "FH.h"
+#include "looptools.h"
+#define __SUBROUTINE__ "SbottomsOS"
 
-	MDAlfas = AlfasDb
-	MDAlfa = AlfaGF
-
-	if( botResum .eq. 2 ) then
-	  db2Lqcd = AlfasDb/pi*Deltab2L_qcd(Qqcd, nf)
-	  MDAlfas(3,3) = AlfasDb*(1 + db2Lqcd)
-	  db2Lew = AlfasQew/pi*Deltab2L_ew(Qew)
-	  MDAlfa(3,3) = AlfaGF*(1 + db2Lew)
-	  if( debuglevel .gt. 2 ) then
-	    DPARA "Delta b  Qew      =", sqrt(Qew)	ENDL
-	    DPARA "Delta b  as(Qew)  =", AlfasQew	ENDL
-	    DPARA "Delta b  f^2L_QCD =", db2Lqcd	ENDL
-	    DPARA "Delta b  f^2L_ew  =", db2Lew		ENDL
-	  endif
-	endif
-
-#define MDseas(g1,g2,as,a) MDcorr(se(1,g1,g2), g1, g2, as, a, Mf2(3,3), Mf2(3,3))
-#define MDse(g1,g2) MDseas(g1,g2, MDAlfas(g1,g2), MDAlfa(g1,g2))
-
-	do g = 1, 3
-	  call MDse(g,g)
-	  Deltaf(bTR,g) = se(1,g,g)/Mf(bTR,g)
-	  Mf(bTR,g) = Mdin(g)/abs(1 + Deltaf(bTR,g))*
-     &      Re(1 - (se(2,g,g) + se(3,g,g))/2)
-	enddo
-
-	do pass = 1, 20
-	  db = Deltaf(bTR,3)
-	  if( debuglevel .ge. 2 ) then
-	    DPARA "============================"	ENDL
-	    DPARA "pass =", pass			ENDL
-	    DPARA "Deltaf(bTR,3) =", Deltaf(bTR,3)	ENDL
-	    DPARA "Mf(bTR,3) =", Mf(bTR,3)		ENDL
-	  endif
-
-	  call SfUpdateLargeTB(fail)
-	  if( botResum .eq. 2 ) then
-	    db2Lqcd = AlfasDb/pi*Deltab2L_qcd(Qqcd, nf)
-	    MDAlfas(3,3) = AlfasDb*(1 + db2Lqcd)
-	    db2Lew = AlfasQew/pi*Deltab2L_ew(Qew)
-	    MDAlfa(3,3) = AlfaGF*(1 + db2Lew)
-	    if( debuglevel .gt. 2 ) then
-	      DPARA "Delta b  f^2L_QCD =", db2Lqcd ENDL
-	      DPARA "Delta b  f^2L_ew  =", db2Lew  ENDL
-	    endif
-	  endif
-
-	  do g = 1, 3
-	    call MDse(1,g)
-	    call MDse(2,g)
-	    call MDse(3,g)
-	    Mcorr(:,g) = se(1,:,g) +
-     &        (Mf(bTR,:)*se(2,:,g) + Mf(bTR,g)*se(3,:,g))/2
-	    Deltaf(bTR,g) = se(1,g,g)/Mf(bTR,g)
-	    Mf(bTR,g) = Mdin(g)/abs(1 + Deltaf(bTR,g))*
-     &        Re(1 - (se(2,g,g) + se(3,g,g))/2)
-	    Mcorr(g,g) = Mcorr(g,g) + Mf(bTR,g)
-	  enddo
-
-	  call SVD(3, 3, Mcorr,3, Mdbar, DR,3, DL,3, 0)
-	  CKM = matmul(CKMin, DL)
-
-	  if( debuglevel .ge. 3 ) then
-	    DPARA "MDc1 =", Mdbar(1), Mdin(1) ENDL
-	    DPARA "MDc2 =", Mdbar(2), Mdin(2) ENDL
-	    DPARA "MDc3 =", Mdbar(3), Mdin(3) ENDL
-	  endif
-
-	  if( abs(Deltaf(bTR,3) - db) .lt. 1D-6 ) goto 99
-	enddo
-
-	Warning("resummation of MB did not converge")
-
-99	continue
-
-	if( fail .ne. 0 )
-     &    Error(error, "negative sbottom mass squares in Delta b")
-
-	call SfUpdate(error, X4(0,bTR,4,4), SORT_SF)
-	call SbglUpdate(error, bTR)
-cNMFV	Sf(bTRps) = Sf(bTR)
-
-* Delta_b with just the 1L corrections for subtraction in Hff:
-	DSS2(:,bTR1,:) = DSS2(:,4,:)
-	call MDseas(3,3, AlfasDb, AlfaGF)
-	forall(g = 1:3)
-	  Deltaf(bTR1,g) = se(1,g,g)/Mf(bTR,g)
-	  Mf(bTR1,g) = Mdin(g)*
-     &      Re(1 - Deltaf(bTR1,g) - (se(2,g,g) + se(3,g,g))/2)
-	endforall
-
-	call SfUpdate(error, X4(0,bTR1,4,4), SORT_SF)
-	call SbglUpdate(error, bTR1)
-cNMFV	Sf(bTR1ps) = Sf(bTR1)
-
-	Mf(bBR,:) = Mf(4,:)/abs(1 + Deltaf(bTR,:))
-	call SfUpdate(error, X4(0,bBR,4,4), 1)
+	Mf(bOS,:) = Mf(4,:)/abs(1 + Deltaf(bTR,:))
+	call SfUpdate(error, X4(0,bOS,4,4), 1)
 	end
 
 
@@ -642,6 +681,9 @@ cNMFV	if( btest(fv, tn) ) call SfUpdateNMFV(error, tn_ty_ts_t, 1)
 	  UStgl2(1,1) = Sq(UStgl(1,1))
 	  UStgl2(1,2) = Sq(UStgl(1,2))
 
+	  if( newTL .ne. 0) then
+	    exit
+	  endif
 * preempt div-by-zero in DRbar2LShifts, TLhr, TLsp:
 	  if( abs(UStgl2(1,1) - UStgl2(1,2)) .gt. eps .and.
      &        ok(MGl2, MTgl2, MStgl2(1)) .and.

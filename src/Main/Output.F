@@ -240,9 +240,9 @@
 	write(unit,111) "sstop", USf(1,2,3,3)
 	write(unit,101) "MSdown", MSf(1,bBR,1), MSf(2,bBR,1)
 	write(unit,101) "MSstrange", MSf(1,bBR,2), MSf(2,bBR,2)
-	write(unit,101) "MSbot", MSf(1,bBR,3), MSf(2,bBR,3)
-	write(unit,111) "csbot", USf(1,1,bBR,3)
-	write(unit,111) "ssbot", USf(1,2,bBR,3)
+	write(unit,101) "MSbot", MSf(1,bOS,3), MSf(2,bOS,3)
+	write(unit,111) "csbot", USf(1,1,bOS,3)
+	write(unit,111) "ssbot", USf(1,2,bOS,3)
 
 	write(unit,101) "MCha", MCha
 	write(unit,112) "UChaRe",
@@ -701,4 +701,3 @@
 999	Error(error, "cannot open file for writing")
 	goto 500
 	end
-

@@ -1,7 +1,7 @@
 #if 0
 	SLHADefs.h
 		declarations for SLHALib data
-		generated 4 Jan 2017 22:09
+		generated 25 Oct 2021 15:22
 #endif
 
 #ifndef SLHADEFS_H
@@ -733,11 +733,62 @@
 #define DCInfo_TextFlat(i) SlhaData(1388+i)
 #define   DCInfo_Len 80
 
-#define OffsetDecays 1463
-#define LengthDecays 4096
-#define BlockDecays(i) SlhaData(1463+i)
-#define Decays_Data(n) Slhadata(1463+n)
+#define OffsetHiggsCouplingsBosons 1463
+#define LengthHiggsCouplingsBosons 15
+#define BlockHiggsCouplingsBosons(i) SlhaData(1463+i)
+#define HiggsCouplingsBosons_gh1WW Slhadata(1464)
+#define HiggsCouplingsBosons_gh2WW Slhadata(1465)
+#define HiggsCouplingsBosons_gh3WW Slhadata(1466)
+#define HiggsCouplingsBosons_gh1ZZ Slhadata(1467)
+#define HiggsCouplingsBosons_gh2ZZ Slhadata(1468)
+#define HiggsCouplingsBosons_gh3ZZ Slhadata(1469)
+#define HiggsCouplingsBosons_gh1gg Slhadata(1470)
+#define HiggsCouplingsBosons_gh2gg Slhadata(1471)
+#define HiggsCouplingsBosons_gh3gg Slhadata(1472)
+#define HiggsCouplingsBosons_gh1h1Z Slhadata(1473)
+#define HiggsCouplingsBosons_gh2h1Z Slhadata(1474)
+#define HiggsCouplingsBosons_gh2h2Z Slhadata(1475)
+#define HiggsCouplingsBosons_gh3h1Z Slhadata(1476)
+#define HiggsCouplingsBosons_gh3h2Z Slhadata(1477)
+#define HiggsCouplingsBosons_gh3h3Z Slhadata(1478)
 
-#define nslhadata 5559
+#define OffsetHiggsCouplingsFermions 1478
+#define LengthHiggsCouplingsFermions 18
+#define BlockHiggsCouplingsFermions(i) SlhaData(1478+i)
+#define HiggsCouplingsFermions_gh1bbS Slhadata(1479)
+#define HiggsCouplingsFermions_gh1bbA Slhadata(1480)
+#define HiggsCouplingsFermions_gh2bbS Slhadata(1481)
+#define HiggsCouplingsFermions_gh2bbA Slhadata(1482)
+#define HiggsCouplingsFermions_gh3bbS Slhadata(1483)
+#define HiggsCouplingsFermions_gh3bbA Slhadata(1484)
+#define HiggsCouplingsFermions_gh1ttS Slhadata(1485)
+#define HiggsCouplingsFermions_gh1ttA Slhadata(1486)
+#define HiggsCouplingsFermions_gh2ttS Slhadata(1487)
+#define HiggsCouplingsFermions_gh2ttA Slhadata(1488)
+#define HiggsCouplingsFermions_gh3ttS Slhadata(1489)
+#define HiggsCouplingsFermions_gh3ttA Slhadata(1490)
+#define HiggsCouplingsFermions_gh1tautauS Slhadata(1491)
+#define HiggsCouplingsFermions_gh1tautauA Slhadata(1492)
+#define HiggsCouplingsFermions_gh2tautauS Slhadata(1493)
+#define HiggsCouplingsFermions_gh2tautauA Slhadata(1494)
+#define HiggsCouplingsFermions_gh3tautauS Slhadata(1495)
+#define HiggsCouplingsFermions_gh3tautauA Slhadata(1496)
+
+#define OffsetChargedHiggsLHC8 1496
+#define LengthChargedHiggsLHC8 1
+#define BlockChargedHiggsLHC8(i) SlhaData(1496+i)
+#define ChargedHiggsLHC8_xstbHp Slhadata(1497)
+
+#define OffsetChargedHiggsLHC13 1497
+#define LengthChargedHiggsLHC13 1
+#define BlockChargedHiggsLHC13(i) SlhaData(1497+i)
+#define ChargedHiggsLHC13_xstbHp Slhadata(1498)
+
+#define OffsetDecays 1498
+#define LengthDecays 4096
+#define BlockDecays(i) SlhaData(1498+i)
+#define Decays_Data(n) Slhadata(1498+n)
+
+#define nslhadata 5594
 
 #endif

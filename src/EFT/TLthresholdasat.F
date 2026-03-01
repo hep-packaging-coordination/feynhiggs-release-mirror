@@ -21,6 +21,7 @@
 
 	RealType sg, xg, rSQ, xSQ, xSQ1, rSU, xSU, xSU1, xSQU2
 	RealType LGlq2, LSQ, LSU, Li2SQ, Li2SU, tmp1
+	RealType MDRshift
 
 	RealType eps
 	parameter (eps = 1D-2)
@@ -36,6 +37,8 @@
 	Li2SQ = Li21m(1/xSQ)
 	rSU = MSU_*sg
 	xSQU2 = (rSQ - rSU)*(rSQ + rSU)
+
+	MDRshift = 0D0
 
 	if( abs(xSQU2) .lt. eps ) then
 	  if( abs(xSQ1) .lt. eps ) then
@@ -68,6 +71,13 @@
      &                   (2*LSQ**2 + LGlq2*(2*LGlq2 + 4*LSQ))*xSQ1)
      &                ))))/(xSQ**3*xSQ1**2)
 	  endif
+	  if (MDRbar .gt. 0) then
+	    MDRshift = 4/3.D0*
+     &         ((1 - LGlq2)*(xg**2*(xg**2 - 6*xSQ) + 6*xSQ**2))/xSQ**3
+	    MDRshift = MDRshift + 8/3.D0*((1 - LGlq2)*cospdiffXtM3(i)*
+     &                                   xg*(xg**2 - 6*xSQ))/xSQ**2
+	  endif
+	  dlam_asat = dlam_asat - MDRshift
 	  return
 	endif
 
@@ -101,6 +111,18 @@
      &               4*LGlq2*
      &                (xSQ1 + xSQ*(LSQ*(5 + 3*xSQ) + 7*xSQ1))))))/
      &      (xSQ*xSQ1**5)
+	  if (MDRbar .gt. 0) then
+	    MDRshift = (4*(1 - LGlq2)*
+     &        (1 - xSQ*(2 - (2 - xSQ)*xSQ**2) -
+     &          xg**2*(2 - xSQ*(6 - (6 - 2*xSQ)*xSQ) -
+     &           xg**2*(1 + (2*LSQ - xSQ)*xSQ))))/
+     &           ((1 - xSQ)**3*xSQ)
+	    MDRshift = MDRshift + (-16*(1 - LGlq2)*xg*cospdiffXtM3(i)*
+     &        (2*xg**2*(1 - xSQ) -
+     &          LSQ*(1 - (2 - xSQ)*xSQ - xg**2*(1 + xSQ))))/
+     &      (1 - xSQ)**3
+	  endif
+	  dlam_asat = dlam_asat - MDRshift
 	  return
 	endif
 
@@ -132,6 +154,18 @@
      &            (11 - 14*LGlq2 - 2*Li2SU + 5*LSU**2)*xSU)*xSU1**3
      &           + LSU*xSU*((19 - 11*xSU)*xSU1 + LSU*(4 + 14*xSU1))
      &         ))/(xSU*xSU1**5)
+	  if (MDRbar .gt. 0) then
+	    MDRshift = (4*(1 - LGlq2)*
+     &        (1 - xSU*(2 - (2 - xSU)*xSU**2) -
+     &        xg**2*(2 - xSU*(6 - (6 - 2*xSU)*xSU) -
+     &           xg**2*(1 + (2*LSU - xSU)*xSU))))/
+     &           ((1 - xSU)**3*xSU)
+	    MDRshift = MDRshift + (-16*(1 - LGlq2)*xg*cospdiffXtM3(i)*
+     &        (2*xg**2*(1 - xSU) -
+     &         LSU*(1 - (2 - xSU)*xSU - xg**2*(1 + xSU))))/
+     &         (1 - xSU)**3
+	  endif
+	  dlam_asat = dlam_asat - MDRshift
 	  return
 	endif
 
@@ -213,4 +247,17 @@
      &                   xSU1**2*(5 - xSU1*(4 + 2*xSU1)))))))
 
 	dlam_asat = (-2*tmp1)/(xSQ*xSQ1**2*xSQU2**4*xSU*xSU1**2)
+
+	if (MDRbar .gt. 0) then
+	    MDRshift = (-4*(1 - LGlq2)*
+     &        ((2*xg**2 - xSQ - xSU)*(xSQ - xSU)**3 +
+     &          xg**4*(xSU**2 - xSQ*(xSQ + (-2*LSQ + 2*LSU)*xSU))))/
+     &        (xSQ*(xSQ - xSU)**3*xSU)
+	    MDRshift = MDRshift + (-16*(1 - LGlq2)*xg*cospdiffXtM3(i)*
+     &       ((LSQ - LSU)*(xSQ - xSU)**2 +
+     &        xg**2*((2 - LSQ + LSU)*xSQ + (-2 - LSQ + LSU)*xSU)))/
+     &       (xSQ - xSU)**3
+	endif
+	dlam_asat = dlam_asat - MDRshift
+
 	end

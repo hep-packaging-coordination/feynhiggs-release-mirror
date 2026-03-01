@@ -62,6 +62,8 @@ c#define zO zRan
 #define DPARA DCOLOR(dpara)
 #define DSLHA DCOLOR(dslha)
 #define DSELF DCOLOR(dself)
+#define DTLAS DSELF
+#define DTLAQ DSELF
 #define DHIGGS DCOLOR(dhiggs)
 #define DEFT DCOLOR(deft)
 #define DCOUP DCOLOR(dcoup)

@@ -202,7 +202,7 @@
 
 	if( looplevel .gt. 1 ) then
 
-	if( drbarvars .eq. 0 ) then
+	if( stopDRbarvars .eq. 0 ) then
 	  xtconv = 1D0
 	else
 	  xtconv = 0D0
