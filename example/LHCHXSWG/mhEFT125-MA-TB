@@ -34,7 +34,8 @@ msusyTable = {{#[[1]], #[[2]]}, #[[3]]} & /@ msusyTable;
 msusyF = Interpolation[msusyTable];
 msusy = msusyF[MA, TB]
 
-FHSetPara[1, 173.34, TB, MA, -1,
+FHSetSMPara[-1, -1, -1, 0.0000116637, -1, -1, -1, -1, -1, -1, -1, 4.18, -1, -1, -1, -1, -1, -1, -1, -1]
+FHSetPara[1, 172.5, TB, MA, -1,
           msusy, msusy, msusy, msusy, msusy, msusy,
           msusy, msusy, msusy, msusy, msusy, msusy,
           msusy, msusy, msusy,

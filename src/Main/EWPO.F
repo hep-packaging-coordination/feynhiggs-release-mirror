@@ -91,7 +91,7 @@
 	subroutine IterateMW(error, mssmflag, mw_, Dr, Drho)
 	implicit none
 	integer error, mssmflag
-	RealType mw_, Dr, Drho
+	RealType mw_, Dr, Drho, Drhosf
 
 #include "Deltar.h"
 
@@ -115,7 +115,8 @@
 	  CWr2 = CWr**2
 	  SWr2 = (1 - CWr)*(1 + CWr)
 	  SWr = sqrt(SWr2)
-	  call Deltar(error, mssmflag, Dr, Drho)
+	  call DrhoMSSM1LSf(drhosf)
+	  call Deltar(error, mssmflag, Dr, Drho, Drhosf)
 	  MWr = MZr*sqrt(.5D0 + sqrt(.25D0 - c*(1 + Dr)))
 	  MWr2 = MWr**2
 	  call AlphaS(asMW, nfdummy, MWr2)
@@ -127,4 +128,3 @@
 
 9	mw_ = MWrun
 	end
-

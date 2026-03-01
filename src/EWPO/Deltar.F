@@ -8,7 +8,7 @@
 #include "debug.h"
 
 
-	subroutine Deltar(error, mssmflag, Dr, Drhoglu)
+	subroutine Deltar(error, mssmflag, Dr, Drhoglu, Drhosfermion)
 	implicit none
 	integer error, mssmflag
 	RealType Dr, Drhoglu
@@ -28,6 +28,7 @@
 	RealType dr1LChaNeu
 	RealType DrMSSM2L, DrhoSUSY2Lgluon, drho2LGlu(ipslots)
 	RealType DrhoSM1LGF, DrhoSUSY1LGF
+	RealType Drhosfermion
 
 	RealType tmp1, tmp2, dup(5)
 
@@ -193,8 +194,8 @@
 #endif
 
 	DrhoSM1LGF = 3/(4*pi**2*sqrt2)*
-     &    (GF*(MB2 + Re(A0(MB2)) - Re(A0(MT2)) + 
-     &       MT2*(1 + 2*Re(B0(0D0,MB2,MT2))) - 
+     &    (GF*(MB2 + Re(A0(MB2)) - Re(A0(MT2)) +
+     &       MT2*(1 + 2*Re(B0(0D0,MB2,MT2))) -
      &       4*Re(B00(0D0,MB2,MT2))))
 
 #ifdef DETAILED_DEBUG
@@ -203,7 +204,8 @@
 
 	DrMSSM1L = DeltaAlfa + DrSM1Lferm0 + DrSM1LfermCKM +
      &    DrMSSM1LVH +
-     &    DrMSSM1Lsqtb + DrMSSM1Lsqlight + DrMSSM1Lsl +
+c     &    DrMSSM1Lsqtb + DrMSSM1Lsqlight + DrMSSM1Lsl +
+     &    -CTWr2*Drhosfermion +
      &    dr1LChaNeu
 	DrMSSM2L = DrSM2L - CTWr2*(Drhoglu +
      &    DrhoSUSY1LGF*(1 - Alfa0/(sqrt2/pi*GF*MWr2*SWr2) +
@@ -242,4 +244,3 @@
 
 	DrF = ToComplex(fy1, fs12)
 	end
-

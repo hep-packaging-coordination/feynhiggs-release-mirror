@@ -1226,7 +1226,13 @@ c	hc(3,4,6) = CW2		! (-I) is missing for (AH+G-), (+I) for AH-G+
 #include "Decay.h"
 
 	RealType mh2, qrun
-	integer nf
+	integer nf, error
+
+	if( mh .le. 0 ) then
+	  fail = 1
+	  Error(error, "Negative Higgs mass encountered.")
+	  return
+	endif
 
 	mh2 = mh**2
 
